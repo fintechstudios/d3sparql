@@ -5,13 +5,12 @@ const pkg = JSON.parse(readFileSync('./package.json').toString());
 
 export default {
   input: 'd3sparql.js',
-  external: [],
+  external: ['d3'],
   output: {
     name: pkg.name,
     sourcemap: true,
     banner: `/* ${pkg.name} ${(new Date().toISOString())} */`,
-    format: 'amd'
-    ,
+    format: 'amd',
   },
   plugins: [
     babel({

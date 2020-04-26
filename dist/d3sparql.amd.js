@@ -1,13 +1,8 @@
-/* d3sparql 2020-04-26T00:07:39.395Z */
-define(function () { 'use strict';
+/* d3sparql 2020-04-26T00:13:59.321Z */
+define(['d3'], function (d3) { 'use strict';
 
-  //
-  // d3sparql.js - utilities for visualizing SPARQL results with the D3 library
-  //
-  //   Web site: http://github.com/ktym/d3sparql/
-  //   Copyright: 2013-2015 (C) Toshiaki Katayama (ktym@dbcls.jp)
-  //   License: BSD license (same as D3.js)
-  //   Initial version: 2013-01-28
+  d3 = d3 && Object.prototype.hasOwnProperty.call(d3, 'default') ? d3['default'] : d3;
+
   //
   const d3sparql = {
     version: "d3sparql.js version 2018-05-04",
@@ -26,13 +21,13 @@ define(function () { 'use strict';
         <script src="d3sparql.js"></script>
         <script>
          function exec() {
-           var endpoint = d3.select("#endpoint").property("value")
-           var sparql = d3.select("#sparql").property("value")
+           let endpoint = d3.select("#endpoint").property("value")
+           let sparql = d3.select("#sparql").property("value")
            d3sparql.query(endpoint, sparql, render)
          }
          function render(json) {
            // set options and call the d3sparql.xxxxx visualization methods in this library ...
-           var config = {
+           let config = {
             "margin": {"top": 10, "right": 10, "bottom": 10, "left": 10},
             "selector": "#result",
             ...
@@ -63,9 +58,9 @@ define(function () { 'use strict';
       console.log(url);
     }
 
-    var mime = "application/sparql-results+json";
+    let mime = "application/sparql-results+json";
     d3.xhr(url, mime, function (request) {
-      var json = request.responseText;
+      let json = request.responseText;
 
       if (d3sparql.debug) {
         console.log(json);
@@ -84,7 +79,7 @@ define(function () { 'use strict';
   };
 
   d3sparql.query = function (endpoint, sparql, callback) {
-    var url = endpoint + "?query=" + encodeURIComponent(sparql);
+    let url = endpoint + "?query=" + encodeURIComponent(sparql);
 
     if (d3sparql.debug) {
       console.log(endpoint);
@@ -98,19 +93,19 @@ define(function () { 'use strict';
 
     Options:
       config = {
-        "key1":   "node1",       // SPARQL variable name for node1 (optional; default is the 1st variable)
-        "key2":   "node2",       // SPARQL variable name for node2 (optional; default is the 2nd varibale)
-        "label1": "node1label",  // SPARQL variable name for the label of node1 (optional; default is the 3rd variable)
-        "label2": "node2label",  // SPARQL variable name for the label of node2 (optional; default is the 4th variable)
-        "value1": "node1value",  // SPARQL variable name for the value of node1 (optional; default is the 5th variable)
-        "value2": "node2value"   // SPARQL variable name for the value of node2 (optional; default is the 6th variable)
+        "key1":   "node1",       // SPARQL letiable name for node1 (optional; default is the 1st letiable)
+        "key2":   "node2",       // SPARQL letiable name for node2 (optional; default is the 2nd letibale)
+        "label1": "node1label",  // SPARQL letiable name for the label of node1 (optional; default is the 3rd letiable)
+        "label2": "node2label",  // SPARQL letiable name for the label of node2 (optional; default is the 4th letiable)
+        "value1": "node1value",  // SPARQL letiable name for the value of node1 (optional; default is the 5th letiable)
+        "value2": "node2value"   // SPARQL letiable name for the value of node2 (optional; default is the 6th letiable)
       }
 
     Synopsis:
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.forcegraph(json, config)
         d3sparql.sankey(json, config)
       }
@@ -122,9 +117,9 @@ define(function () { 'use strict';
 
   d3sparql.graph = function (json, config) {
     config = config || {};
-    var head = json.head.vars;
-    var data = json.results.bindings;
-    var opts = {
+    let head = json.head.lets;
+    let data = json.results.bindings;
+    let opts = {
       "key1": config.key1 || head[0] || "key1",
       "key2": config.key2 || head[1] || "key2",
       "label1": config.label1 || head[2] || false,
@@ -132,20 +127,20 @@ define(function () { 'use strict';
       "value1": config.value1 || head[4] || false,
       "value2": config.value2 || head[5] || false
     };
-    var graph = {
+    let graph = {
       "nodes": [],
       "links": []
     };
-    var check = d3.map();
-    var index = 0;
+    let check = d3.map();
+    let index = 0;
 
-    for (var i = 0; i < data.length; i++) {
-      var key1 = data[i][opts.key1].value;
-      var key2 = data[i][opts.key2].value;
-      var label1 = opts.label1 ? data[i][opts.label1].value : key1;
-      var label2 = opts.label2 ? data[i][opts.label2].value : key2;
-      var value1 = opts.value1 ? data[i][opts.value1].value : false;
-      var value2 = opts.value2 ? data[i][opts.value2].value : false;
+    for (let i = 0; i < data.length; i++) {
+      let key1 = data[i][opts.key1].value;
+      let key2 = data[i][opts.key2].value;
+      let label1 = opts.label1 ? data[i][opts.label1].value : key1;
+      let label2 = opts.label2 ? data[i][opts.label2].value : key2;
+      let value1 = opts.value1 ? data[i][opts.value1].value : false;
+      let value2 = opts.value2 ? data[i][opts.value2].value : false;
 
       if (!check.has(key1)) {
         graph.nodes.push({
@@ -191,17 +186,17 @@ define(function () { 'use strict';
 
     Options:
       config = {
-        "root":   "root_name",    // SPARQL variable name for root node (optional; default is the 1st variable)
-        "parent": "parent_name",  // SPARQL variable name for parent node (optional; default is the 2nd variable)
-        "child":  "child_name",   // SPARQL variable name for child node (ptional; default is the 3rd variable)
-        "value":  "value_name"    // SPARQL variable name for numerical value of the child node (optional; default is the 4th variable or "value")
+        "root":   "root_name",    // SPARQL letiable name for root node (optional; default is the 1st letiable)
+        "parent": "parent_name",  // SPARQL letiable name for parent node (optional; default is the 2nd letiable)
+        "child":  "child_name",   // SPARQL letiable name for child node (ptional; default is the 3rd letiable)
+        "value":  "value_name"    // SPARQL letiable name for numerical value of the child node (optional; default is the 4th letiable or "value")
       }
 
     Synopsis:
       d3sparql.sparql(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.roundtree(json, config)
         d3sparql.dendrogram(json, config)
         d3sparql.sunburst(json, config)
@@ -213,20 +208,22 @@ define(function () { 'use strict';
 
   d3sparql.tree = function (json, config) {
     config = config || {};
-    var head = json.head.vars;
-    var data = json.results.bindings;
-    var opts = {
+    let head = json.head.lets;
+    let data = json.results.bindings;
+    let opts = {
       "root": config.root || head[0],
       "parent": config.parent || head[1],
       "child": config.child || head[2],
       "value": config.value || head[3] || "value"
     };
-    var pair = d3.map();
-    var size = d3.map();
-    var root = data[0][opts.root].value;
-    var parent = child = children = true;
+    let pair = d3.map();
+    let size = d3.map();
+    let root = data[0][opts.root].value;
+    let parent = true;
+    let child = true;
+    let children = true;
 
-    for (var i = 0; i < data.length; i++) {
+    for (let i = 0; i < data.length; i++) {
       parent = data[i][opts.parent].value;
       child = data[i][opts.child].value;
 
@@ -247,18 +244,18 @@ define(function () { 'use strict';
     }
 
     function traverse(node) {
-      var list = pair.get(node);
+      let list = pair.get(node);
 
       if (list) {
-        var children = list.map(function (d) {
+        let children = list.map(function (d) {
           return traverse(d);
         }); // sum of values of children
 
-        var subtotal = d3.sum(children, function (d) {
+        let subtotal = d3.sum(children, function (d) {
           return d.value;
         }); // add a value of parent if exists
 
-        var total = d3.sum([subtotal, size.get(node)]);
+        let total = d3.sum([subtotal, size.get(node)]);
         return {
           "name": node,
           "children": children,
@@ -272,7 +269,7 @@ define(function () { 'use strict';
       }
     }
 
-    var tree = traverse(root);
+    let tree = traverse(root);
 
     if (d3sparql.debug) {
       console.log(JSON.stringify(tree));
@@ -292,7 +289,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.htmltable(json, config)
       }
 
@@ -313,19 +310,19 @@ define(function () { 'use strict';
 
   d3sparql.htmltable = function (json, config) {
     config = config || {};
-    var head = json.head.vars;
-    var data = json.results.bindings;
-    var opts = {
+    let head = json.head.lets;
+    let data = json.results.bindings;
+    let opts = {
       "selector": config.selector || null
     };
-    var table = d3sparql.select(opts.selector, "htmltable").append("table").attr("class", "table table-bordered");
-    var thead = table.append("thead");
-    var tbody = table.append("tbody");
+    let table = d3sparql.select(opts.selector, "htmltable").append("table").attr("class", "table table-bordered");
+    let thead = table.append("thead");
+    let tbody = table.append("tbody");
     thead.append("tr").selectAll("th").data(head).enter().append("th").text(function (col) {
       return col;
     });
-    var rows = tbody.selectAll("tr").data(data).enter().append("tr");
-    var cells = rows.selectAll("td").data(function (row) {
+    let rows = tbody.selectAll("tr").data(data).enter().append("tr");
+    let cells = rows.selectAll("td").data(function (row) {
       return head.map(function (col) {
         return row[col] ? row[col].value : "";
       });
@@ -353,7 +350,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.htmlhash(json, config)
       }
 
@@ -374,14 +371,14 @@ define(function () { 'use strict';
 
   d3sparql.htmlhash = function (json, config) {
     config = config || {};
-    var head = json.head.vars;
-    var data = json.results.bindings[0];
-    var opts = {
+    let head = json.head.lets;
+    let data = json.results.bindings[0];
+    let opts = {
       "selector": config.selector || null
     };
-    var table = d3sparql.select(opts.selector, "htmlhash").append("table").attr("class", "table table-bordered");
-    var tbody = table.append("tbody");
-    var row = tbody.selectAll("tr").data(function () {
+    let table = d3sparql.select(opts.selector, "htmlhash").append("table").attr("class", "table table-bordered");
+    let tbody = table.append("tbody");
+    let row = tbody.selectAll("tr").data(function () {
       return head.map(function (col) {
         return {
           "head": col,
@@ -413,10 +410,10 @@ define(function () { 'use strict';
 
     Options:
       config = {
-        "label_x":  "Prefecture",  // label for x-axis (optional; default is same as var_x)
-        "label_y":  "Area",        // label for y-axis (optional; default is same as var_y)
-        "var_x":    "pref",        // SPARQL variable name for x-axis (optional; default is the 1st variable)
-        "var_y":    "area",        // SPARQL variable name for y-axis (optional; default is the 2nd variable)
+        "label_x":  "Prefecture",  // label for x-axis (optional; default is same as let_x)
+        "label_y":  "Area",        // label for y-axis (optional; default is same as let_y)
+        "let_x":    "pref",        // SPARQL letiable name for x-axis (optional; default is the 1st letiable)
+        "let_y":    "area",        // SPARQL letiable name for y-axis (optional; default is the 2nd letiable)
         "width":    850,           // canvas width (optional)
         "height":   300,           // canvas height (optional)
         "margin":   40,            // canvas margin (optional)
@@ -427,7 +424,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.barchart(json, config)
       }
 
@@ -457,46 +454,46 @@ define(function () { 'use strict';
 
   d3sparql.barchart = function (json, config) {
     config = config || {};
-    var head = json.head.vars;
-    var data = json.results.bindings;
-    var opts = {
+    let head = json.head.lets;
+    let data = json.results.bindings;
+    let opts = {
       "label_x": config.label_x || head[0],
       "label_y": config.label_y || head[1],
-      "var_x": config.var_x || head[0],
-      "var_y": config.var_y || head[1],
+      "let_x": config.let_x || head[0],
+      "let_y": config.let_y || head[1],
       "width": config.width || 750,
       "height": config.height || 300,
       "margin": config.margin || 80,
       // TODO: to make use of {top: 10, right: 10, bottom: 80, left: 80}
       "selector": config.selector || null
     };
-    var scale_x = d3.scale.ordinal().rangeRoundBands([0, opts.width - opts.margin], 0.1);
-    var scale_y = d3.scale.linear().range([opts.height - opts.margin, 0]);
-    var axis_x = d3.svg.axis().scale(scale_x).orient("bottom");
-    var axis_y = d3.svg.axis().scale(scale_y).orient("left"); // .ticks(10, "%")
+    let scale_x = d3.scale.ordinal().rangeRoundBands([0, opts.width - opts.margin], 0.1);
+    let scale_y = d3.scale.linear().range([opts.height - opts.margin, 0]);
+    let axis_x = d3.svg.axis().scale(scale_x).orient("bottom");
+    let axis_y = d3.svg.axis().scale(scale_y).orient("left"); // .ticks(10, "%")
 
     scale_x.domain(data.map(function (d) {
-      return d[opts.var_x].value;
+      return d[opts.let_x].value;
     }));
     scale_y.domain(d3.extent(data, function (d) {
-      return parseInt(d[opts.var_y].value);
+      return parseInt(d[opts.let_y].value);
     }));
-    var svg = d3sparql.select(opts.selector, "barchart").append("svg").attr("width", opts.width).attr("height", opts.height); //    .append("g")
+    let svg = d3sparql.select(opts.selector, "barchart").append("svg").attr("width", opts.width).attr("height", opts.height); //    .append("g")
     //    .attr("transform", "translate(" + opts.margin + "," + 0 + ")")
 
-    var ax = svg.append("g").attr("class", "axis x").attr("transform", "translate(" + opts.margin + "," + (opts.height - opts.margin) + ")").call(axis_x);
-    var ay = svg.append("g").attr("class", "axis y").attr("transform", "translate(" + opts.margin + ",0)").call(axis_y);
-    var bar = svg.selectAll(".bar").data(data).enter().append("rect").attr("transform", "translate(" + opts.margin + "," + 0 + ")").attr("class", "bar").attr("x", function (d) {
-      return scale_x(d[opts.var_x].value);
+    let ax = svg.append("g").attr("class", "axis x").attr("transform", "translate(" + opts.margin + "," + (opts.height - opts.margin) + ")").call(axis_x);
+    let ay = svg.append("g").attr("class", "axis y").attr("transform", "translate(" + opts.margin + ",0)").call(axis_y);
+    let bar = svg.selectAll(".bar").data(data).enter().append("rect").attr("transform", "translate(" + opts.margin + "," + 0 + ")").attr("class", "bar").attr("x", function (d) {
+      return scale_x(d[opts.let_x].value);
     }).attr("width", scale_x.rangeBand()).attr("y", function (d) {
-      return scale_y(d[opts.var_y].value);
+      return scale_y(d[opts.let_y].value);
     }).attr("height", function (d) {
-      return opts.height - scale_y(parseInt(d[opts.var_y].value)) - opts.margin;
+      return opts.height - scale_y(parseInt(d[opts.let_y].value)) - opts.margin;
     });
     /*
         .call(function(e) {
           e.each(function(d) {
-            console.log(parseInt(d[opts.var_y].value))
+            console.log(parseInt(d[opts.let_y].value))
           })
         })
     */
@@ -529,8 +526,8 @@ define(function () { 'use strict';
 
     Options:
       config = {
-        "label":    "pref",    // SPARQL variable name for slice label (optional; default is the 1st variable)
-        "size":     "area",    // SPARQL variable name for slice value (optional; default is the 2nd variable)
+        "label":    "pref",    // SPARQL letiable name for slice label (optional; default is the 1st letiable)
+        "size":     "area",    // SPARQL letiable name for slice value (optional; default is the 2nd letiable)
         "width":    700,       // canvas width (optional)
         "height":   600,       // canvas height (optional)
         "margin":   10,        // canvas margin (optional)
@@ -542,7 +539,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.piechart(json, config)
       }
 
@@ -560,9 +557,9 @@ define(function () { 'use strict';
 
   d3sparql.piechart = function (json, config) {
     config = config || {};
-    var head = json.head.vars;
-    var data = json.results.bindings;
-    var opts = {
+    let head = json.head.lets;
+    let data = json.results.bindings;
+    let opts = {
       "label": config.label || head[0],
       "size": config.size || head[1],
       "width": config.width || 700,
@@ -571,20 +568,20 @@ define(function () { 'use strict';
       "hole": config.hole || 100,
       "selector": config.selector || null
     };
-    var radius = Math.min(opts.width, opts.height) / 2 - opts.margin;
-    var hole = Math.max(Math.min(radius - 50, opts.hole), 0);
-    var color = d3.scale.category20();
-    var arc = d3.svg.arc().outerRadius(radius).innerRadius(hole);
-    var pie = d3.layout.pie() //.sort(null)
+    let radius = Math.min(opts.width, opts.height) / 2 - opts.margin;
+    let hole = Math.max(Math.min(radius - 50, opts.hole), 0);
+    let color = d3.scale.category20();
+    let arc = d3.svg.arc().outerRadius(radius).innerRadius(hole);
+    let pie = d3.layout.pie() //.sort(null)
     .value(function (d) {
       return d[opts.size].value;
     });
-    var svg = d3sparql.select(opts.selector, "piechart").append("svg").attr("width", opts.width).attr("height", opts.height).append("g").attr("transform", "translate(" + opts.width / 2 + "," + opts.height / 2 + ")");
-    var g = svg.selectAll(".arc").data(pie(data)).enter().append("g").attr("class", "arc");
-    var slice = g.append("path").attr("d", arc).attr("fill", function (d, i) {
+    let svg = d3sparql.select(opts.selector, "piechart").append("svg").attr("width", opts.width).attr("height", opts.height).append("g").attr("transform", "translate(" + opts.width / 2 + "," + opts.height / 2 + ")");
+    let g = svg.selectAll(".arc").data(pie(data)).enter().append("g").attr("class", "arc");
+    let slice = g.append("path").attr("d", arc).attr("fill", function (d, i) {
       return color(i);
     });
-    var text = g.append("text").attr("class", "label").attr("transform", function (d) {
+    let text = g.append("text").attr("class", "label").attr("transform", function (d) {
       return "translate(" + arc.centroid(d) + ")";
     }).attr("dy", ".35em").attr("text-anchor", "middle").text(function (d) {
       return d.data[opts.label].value;
@@ -609,11 +606,11 @@ define(function () { 'use strict';
 
     Options:
       config = {
-        "label_x":  "Size",    // label for x-axis (optional; default is same as var_x)
-        "label_y":  "Count",   // label for y-axis (optional; default is same as var_y)
-        "var_x":    "size",    // SPARQL variable name for x-axis values (optional; default is the 1st variable)
-        "var_y":    "count",   // SPARQL variable name for y-axis values (optional; default is the 2nd variable)
-        "var_r":    "volume",  // SPARQL variable name for radius (optional; default is the 3rd variable)
+        "label_x":  "Size",    // label for x-axis (optional; default is same as let_x)
+        "label_y":  "Count",   // label for y-axis (optional; default is same as let_y)
+        "let_x":    "size",    // SPARQL letiable name for x-axis values (optional; default is the 1st letiable)
+        "let_y":    "count",   // SPARQL letiable name for y-axis values (optional; default is the 2nd letiable)
+        "let_r":    "volume",  // SPARQL letiable name for radius (optional; default is the 3rd letiable)
         "min_r":    1,         // minimum radius size (optional; default is 1)
         "max_r":    20,        // maximum radius size (optional; default is 20)
         "width":    850,       // canvas width (optional)
@@ -627,7 +624,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.scatterplot(json, config)
       }
 
@@ -648,15 +645,15 @@ define(function () { 'use strict';
 
   d3sparql.scatterplot = function (json, config) {
     config = config || {};
-    var head = json.head.vars;
-    var data = json.results.bindings;
-    var opts = {
+    let head = json.head.lets;
+    let data = json.results.bindings;
+    let opts = {
       "label_x": config.label_x || head[0] || "x",
       "label_y": config.label_y || head[1] || "y",
       "label_r": config.label_r || head[2] || "r",
-      "var_x": config.var_x || head[0],
-      "var_y": config.var_y || head[1],
-      "var_r": config.var_r || head[2] || 5,
+      "let_x": config.let_x || head[0],
+      "let_y": config.let_y || head[1],
+      "let_r": config.let_r || head[2] || 5,
       "min_r": config.min_r || 1,
       "max_r": config.max_r || 20,
       "width": config.width || 850,
@@ -665,32 +662,32 @@ define(function () { 'use strict';
       "margin_y": config.margin_y || 40,
       "selector": config.selector || null
     };
-    var extent_x = d3.extent(data, function (d) {
-      return parseInt(d[opts.var_x].value);
+    let extent_x = d3.extent(data, function (d) {
+      return parseInt(d[opts.let_x].value);
     });
-    var extent_y = d3.extent(data, function (d) {
-      return parseInt(d[opts.var_y].value);
+    let extent_y = d3.extent(data, function (d) {
+      return parseInt(d[opts.let_y].value);
     });
-    var extent_r = d3.extent(data, function (d) {
-      return parseInt(d[opts.var_r] ? d[opts.var_r].value : opts.var_r);
+    let extent_r = d3.extent(data, function (d) {
+      return parseInt(d[opts.let_r] ? d[opts.let_r].value : opts.let_r);
     });
-    var scale_x = d3.scale.linear().range([opts.margin_x, opts.width - opts.margin_x]).domain(extent_x);
-    var scale_y = d3.scale.linear().range([opts.height - opts.margin_y, opts.margin_y]).domain(extent_y);
-    var scale_r = d3.scale.linear().range([opts.min_r, opts.max_r]).domain(extent_r);
-    var axis_x = d3.svg.axis().scale(scale_x);
-    var axis_y = d3.svg.axis().scale(scale_y).orient("left");
-    var svg = d3sparql.select(opts.selector, "scatterplot").append("svg").attr("width", opts.width).attr("height", opts.height);
-    var circle = svg.selectAll("circle").data(data).enter().append("circle").attr("class", "node").attr("cx", function (d) {
-      return scale_x(d[opts.var_x].value);
+    let scale_x = d3.scale.linear().range([opts.margin_x, opts.width - opts.margin_x]).domain(extent_x);
+    let scale_y = d3.scale.linear().range([opts.height - opts.margin_y, opts.margin_y]).domain(extent_y);
+    let scale_r = d3.scale.linear().range([opts.min_r, opts.max_r]).domain(extent_r);
+    let axis_x = d3.svg.axis().scale(scale_x);
+    let axis_y = d3.svg.axis().scale(scale_y).orient("left");
+    let svg = d3sparql.select(opts.selector, "scatterplot").append("svg").attr("width", opts.width).attr("height", opts.height);
+    let circle = svg.selectAll("circle").data(data).enter().append("circle").attr("class", "node").attr("cx", function (d) {
+      return scale_x(d[opts.let_x].value);
     }).attr("cy", function (d) {
-      return scale_y(d[opts.var_y].value);
+      return scale_y(d[opts.let_y].value);
     }).attr("r", function (d) {
-      return scale_r(d[opts.var_r] ? d[opts.var_r].value : opts.var_r);
+      return scale_r(d[opts.let_r] ? d[opts.let_r].value : opts.let_r);
     }).attr("opacity", 0.5).append("title").text(function (d) {
       return d[opts.label_r] ? d[opts.label_r].value : opts.label_r;
     });
-    var ax = svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + (opts.height - opts.margin_y) + ")").call(axis_x);
-    var ay = svg.append("g").attr("class", "y axis").attr("transform", "translate(" + opts.margin_x + ",0)").call(axis_y);
+    let ax = svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + (opts.height - opts.margin_y) + ")").call(axis_x);
+    let ay = svg.append("g").attr("class", "y axis").attr("transform", "translate(" + opts.margin_x + ",0)").call(axis_y);
     ax.append("text").attr("class", "label").text(opts.label_x).style("text-anchor", "middle").attr("transform", "translate(" + (opts.width - opts.margin_x) / 2 + "," + (opts.margin_y - 5) + ")");
     ay.append("text").attr("class", "label").text(opts.label_y).style("text-anchor", "middle").attr("transform", "rotate(-90)").attr("x", 0 - opts.height / 2).attr("y", 0 - (opts.margin_x - 20)); // default CSS/SVG
 
@@ -730,7 +727,7 @@ define(function () { 'use strict';
         "distance": 30,        // target distance between linked nodes (optional)
         "width":    1000,      // canvas width (optional)
         "height":   500,       // canvas height (optional)
-        "label":    "name",    // SPARQL variable name for node labels (optional)
+        "label":    "name",    // SPARQL letiable name for node labels (optional)
         "selector": "#result"
         // options for d3sparql.graph() can be added here ...
       }
@@ -739,7 +736,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.forcegraph(json, config)
       }
 
@@ -769,11 +766,11 @@ define(function () { 'use strict';
 
   d3sparql.forcegraph = function (json, config) {
     config = config || {};
-    var graph = json.head && json.results ? d3sparql.graph(json, config) : json;
-    var scale = d3.scale.linear().domain(d3.extent(graph.nodes, function (d) {
+    let graph = json.head && json.results ? d3sparql.graph(json, config) : json;
+    let scale = d3.scale.linear().domain(d3.extent(graph.nodes, function (d) {
       return parseFloat(d.value);
     })).range([1, 20]);
-    var opts = {
+    let opts = {
       "radius": config.radius || function (d) {
         return d.value ? scale(d.value) : 1 + d.label.length;
       },
@@ -784,14 +781,14 @@ define(function () { 'use strict';
       "label": config.label || false,
       "selector": config.selector || null
     };
-    var svg = d3sparql.select(opts.selector, "forcegraph").append("svg").attr("width", opts.width).attr("height", opts.height);
-    var link = svg.selectAll(".link").data(graph.links).enter().append("line").attr("class", "link");
-    var node = svg.selectAll(".node").data(graph.nodes).enter().append("g");
-    var circle = node.append("circle").attr("class", "node").attr("r", opts.radius);
-    var text = node.append("text").text(function (d) {
+    let svg = d3sparql.select(opts.selector, "forcegraph").append("svg").attr("width", opts.width).attr("height", opts.height);
+    let link = svg.selectAll(".link").data(graph.links).enter().append("line").attr("class", "link");
+    let node = svg.selectAll(".node").data(graph.nodes).enter().append("g");
+    let circle = node.append("circle").attr("class", "node").attr("r", opts.radius);
+    let text = node.append("text").text(function (d) {
       return d[opts.label || "label"];
     }).attr("class", "node");
-    var force = d3.layout.force().charge(opts.charge).linkDistance(opts.distance).size([opts.width, opts.height]).nodes(graph.nodes).links(graph.links).start();
+    let force = d3.layout.force().charge(opts.charge).linkDistance(opts.distance).size([opts.width, opts.height]).nodes(graph.nodes).links(graph.links).start();
     force.on("tick", function () {
       link.attr("x1", function (d) {
         return d.source.x;
@@ -849,7 +846,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.sankey(json, config)
       }
 
@@ -883,30 +880,30 @@ define(function () { 'use strict';
 
   d3sparql.sankey = function (json, config) {
     config = config || {};
-    var graph = json.head && json.results ? d3sparql.graph(json, config) : json;
-    var opts = {
+    let graph = json.head && json.results ? d3sparql.graph(json, config) : json;
+    let opts = {
       "width": config.width || 750,
       "height": config.height || 1200,
       "margin": config.margin || 10,
       "selector": config.selector || null
     };
-    var nodes = graph.nodes;
-    var links = graph.links;
+    let nodes = graph.nodes;
+    let links = graph.links;
 
-    for (var i = 0; i < links.length; i++) {
+    for (let i = 0; i < links.length; i++) {
       links[i].value = 2; // TODO: fix to use values on links
     }
 
-    var sankey = d3.sankey().size([opts.width, opts.height]).nodeWidth(15).nodePadding(10).nodes(nodes).links(links).layout(32);
-    var path = sankey.link();
-    var color = d3.scale.category20();
-    var svg = d3sparql.select(opts.selector, "sankey").append("svg").attr("width", opts.width + opts.margin * 2).attr("height", opts.height + opts.margin * 2).append("g").attr("transform", "translate(" + opts.margin + "," + opts.margin + ")");
-    var link = svg.selectAll(".link").data(links).enter().append("path").attr("class", "link").attr("d", path).attr("stroke-width", function (d) {
+    let sankey = d3.sankey().size([opts.width, opts.height]).nodeWidth(15).nodePadding(10).nodes(nodes).links(links).layout(32);
+    let path = sankey.link();
+    let color = d3.scale.category20();
+    let svg = d3sparql.select(opts.selector, "sankey").append("svg").attr("width", opts.width + opts.margin * 2).attr("height", opts.height + opts.margin * 2).append("g").attr("transform", "translate(" + opts.margin + "," + opts.margin + ")");
+    let link = svg.selectAll(".link").data(links).enter().append("path").attr("class", "link").attr("d", path).attr("stroke-width", function (d) {
       return Math.max(1, d.dy);
     }).sort(function (a, b) {
       return b.dy - a.dy;
     });
-    var node = svg.selectAll(".node").data(nodes).enter().append("g").attr("class", "node").attr("transform", function (d) {
+    let node = svg.selectAll(".node").data(nodes).enter().append("g").attr("class", "node").attr("transform", function (d) {
       return "translate(" + d.x + "," + d.y + ")";
     }).call(d3.behavior.drag().origin(function (d) {
       return d;
@@ -960,7 +957,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.roundtree(json, config)
       }
 
@@ -987,29 +984,29 @@ define(function () { 'use strict';
 
   d3sparql.roundtree = function (json, config) {
     config = config || {};
-    var tree = json.head && json.results ? d3sparql.tree(json, config) : json;
-    var opts = {
+    let tree = json.head && json.results ? d3sparql.tree(json, config) : json;
+    let opts = {
       "diameter": config.diameter || 800,
       "angle": config.angle || 360,
       "depth": config.depth || 200,
       "radius": config.radius || 5,
       "selector": config.selector || null
     };
-    var tree_layout = d3.layout.tree().size([opts.angle, opts.depth]).separation(function (a, b) {
+    let tree_layout = d3.layout.tree().size([opts.angle, opts.depth]).separation(function (a, b) {
       return (a.parent === b.parent ? 1 : 2) / a.depth;
     });
-    var nodes = tree_layout.nodes(tree);
-    var links = tree_layout.links(nodes);
-    var diagonal = d3.svg.diagonal.radial().projection(function (d) {
+    let nodes = tree_layout.nodes(tree);
+    let links = tree_layout.links(nodes);
+    let diagonal = d3.svg.diagonal.radial().projection(function (d) {
       return [d.y, d.x / 180 * Math.PI];
     });
-    var svg = d3sparql.select(opts.selector, "roundtree").append("svg").attr("width", opts.diameter).attr("height", opts.diameter).append("g").attr("transform", "translate(" + opts.diameter / 2 + "," + opts.diameter / 2 + ")");
-    var link = svg.selectAll(".link").data(links).enter().append("path").attr("class", "link").attr("d", diagonal);
-    var node = svg.selectAll(".node").data(nodes).enter().append("g").attr("class", "node").attr("transform", function (d) {
+    let svg = d3sparql.select(opts.selector, "roundtree").append("svg").attr("width", opts.diameter).attr("height", opts.diameter).append("g").attr("transform", "translate(" + opts.diameter / 2 + "," + opts.diameter / 2 + ")");
+    let link = svg.selectAll(".link").data(links).enter().append("path").attr("class", "link").attr("d", diagonal);
+    let node = svg.selectAll(".node").data(nodes).enter().append("g").attr("class", "node").attr("transform", function (d) {
       return "rotate(" + (d.x - 90) + ") translate(" + d.y + ")";
     });
-    var circle = node.append("circle").attr("r", opts.radius);
-    var text = node.append("text").attr("dy", ".35em").attr("text-anchor", function (d) {
+    let circle = node.append("circle").attr("r", opts.radius);
+    let text = node.append("text").attr("dy", ".35em").attr("text-anchor", function (d) {
       return d.x < 180 ? "start" : "end";
     }).attr("transform", function (d) {
       return d.x < 180 ? "translate(8)" : "rotate(180) translate(-8)";
@@ -1053,7 +1050,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.dendrogram(json, config)
       }
 
@@ -1080,27 +1077,27 @@ define(function () { 'use strict';
 
   d3sparql.dendrogram = function (json, config) {
     config = config || {};
-    var tree = json.head && json.results ? d3sparql.tree(json, config) : json;
-    var opts = {
+    let tree = json.head && json.results ? d3sparql.tree(json, config) : json;
+    let opts = {
       "width": config.width || 800,
       "height": config.height || 2000,
       "margin": config.margin || 350,
       "radius": config.radius || 5,
       "selector": config.selector || null
     };
-    var cluster = d3.layout.cluster().size([opts.height, opts.width - opts.margin]);
-    var diagonal = d3.svg.diagonal().projection(function (d) {
+    let cluster = d3.layout.cluster().size([opts.height, opts.width - opts.margin]);
+    let diagonal = d3.svg.diagonal().projection(function (d) {
       return [d.y, d.x];
     });
-    var svg = d3sparql.select(opts.selector, "dendrogram").append("svg").attr("width", opts.width).attr("height", opts.height).append("g").attr("transform", "translate(40,0)");
-    var nodes = cluster.nodes(tree);
-    var links = cluster.links(nodes);
-    var link = svg.selectAll(".link").data(links).enter().append("path").attr("class", "link").attr("d", diagonal);
-    var node = svg.selectAll(".node").data(nodes).enter().append("g").attr("class", "node").attr("transform", function (d) {
+    let svg = d3sparql.select(opts.selector, "dendrogram").append("svg").attr("width", opts.width).attr("height", opts.height).append("g").attr("transform", "translate(40,0)");
+    let nodes = cluster.nodes(tree);
+    let links = cluster.links(nodes);
+    let link = svg.selectAll(".link").data(links).enter().append("path").attr("class", "link").attr("d", diagonal);
+    let node = svg.selectAll(".node").data(nodes).enter().append("g").attr("class", "node").attr("transform", function (d) {
       return "translate(" + d.y + "," + d.x + ")";
     });
-    var circle = node.append("circle").attr("r", opts.radius);
-    var text = node.append("text").attr("dx", function (d) {
+    let circle = node.append("circle").attr("r", opts.radius);
+    let text = node.append("text").attr("dx", function (d) {
       return d.parent && d.children ? -8 : 8;
     }).attr("dy", 5).style("text-anchor", function (d) {
       return d.parent && d.children ? "end" : "start";
@@ -1144,7 +1141,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.sunburst(json, config)
       }
 
@@ -1164,19 +1161,19 @@ define(function () { 'use strict';
 
   d3sparql.sunburst = function (json, config) {
     config = config || {};
-    var tree = json.head && json.results ? d3sparql.tree(json, config) : json;
-    var opts = {
+    let tree = json.head && json.results ? d3sparql.tree(json, config) : json;
+    let opts = {
       "width": config.width || 1000,
       "height": config.height || 900,
       "margin": config.margin || 150,
       "selector": config.selector || null
     };
-    var radius = Math.min(opts.width, opts.height) / 2 - opts.margin;
-    var x = d3.scale.linear().range([0, 2 * Math.PI]);
-    var y = d3.scale.sqrt().range([0, radius]);
-    var color = d3.scale.category20();
-    var svg = d3sparql.select(opts.selector, "sunburst").append("svg").attr("width", opts.width).attr("height", opts.height).append("g").attr("transform", "translate(" + opts.width / 2 + "," + opts.height / 2 + ")");
-    var arc = d3.svg.arc().startAngle(function (d) {
+    let radius = Math.min(opts.width, opts.height) / 2 - opts.margin;
+    let x = d3.scale.linear().range([0, 2 * Math.PI]);
+    let y = d3.scale.sqrt().range([0, radius]);
+    let color = d3.scale.category20();
+    let svg = d3sparql.select(opts.selector, "sunburst").append("svg").attr("width", opts.width).attr("height", opts.height).append("g").attr("transform", "translate(" + opts.width / 2 + "," + opts.height / 2 + ")");
+    let arc = d3.svg.arc().startAngle(function (d) {
       return Math.max(0, Math.min(2 * Math.PI, x(d.x)));
     }).endAngle(function (d) {
       return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
@@ -1185,15 +1182,15 @@ define(function () { 'use strict';
     }).outerRadius(function (d) {
       return Math.max(0, y(d.y + d.dy));
     });
-    var partition = d3.layout.partition().value(function (d) {
+    let partition = d3.layout.partition().value(function (d) {
       return d.value;
     });
-    var nodes = partition.nodes(tree);
-    var path = svg.selectAll("path").data(nodes).enter().append("path").attr("d", arc).attr("class", "arc").style("fill", function (d) {
+    let nodes = partition.nodes(tree);
+    let path = svg.selectAll("path").data(nodes).enter().append("path").attr("d", arc).attr("class", "arc").style("fill", function (d) {
       return color((d.children ? d : d.parent).name);
     }).on("click", click);
-    var text = svg.selectAll("text").data(nodes).enter().append("text").attr("transform", function (d) {
-      var rotate = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
+    let text = svg.selectAll("text").data(nodes).enter().append("text").attr("transform", function (d) {
+      let rotate = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
       return "rotate(" + rotate + ") translate(" + y(d.y) + ")";
     }).attr("dx", ".5em").attr("dy", ".35em").text(function (d) {
       return d.name;
@@ -1215,7 +1212,7 @@ define(function () { 'use strict';
         return isParentOf(d, e) ? null : d3.select(this).style("visibility");
       }).transition().duration(750).attrTween("transform", function (d) {
         return function () {
-          var rotate = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
+          let rotate = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
           return "rotate(" + rotate + ") translate(" + y(d.y) + ")";
         };
       }).each("end", function (e) {
@@ -1229,7 +1226,7 @@ define(function () { 'use strict';
     }
 
     function arcTween(d) {
-      var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+      let xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
           yd = d3.interpolate(y.domain(), [d.y, maxDepth(d)]),
           yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
       return function (d) {
@@ -1272,7 +1269,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.circlepack(json, config)
       }
 
@@ -1311,24 +1308,24 @@ define(function () { 'use strict';
 
   d3sparql.circlepack = function (json, config) {
     config = config || {};
-    var tree = json.head && json.results ? d3sparql.tree(json, config) : json;
-    var opts = {
+    let tree = json.head && json.results ? d3sparql.tree(json, config) : json;
+    let opts = {
       "width": config.width || 800,
       "height": config.height || 800,
       "diameter": config.diameter || 700,
       "selector": config.selector || null
     };
-    var w = opts.width,
+    let w = opts.width,
         h = opts.height,
         r = opts.diameter,
         x = d3.scale.linear().range([0, r]),
         y = d3.scale.linear().range([0, r]);
-    var pack = d3.layout.pack().size([r, r]).value(function (d) {
+    let pack = d3.layout.pack().size([r, r]).value(function (d) {
       return d.value;
     });
-    var node = tree;
-    var nodes = pack.nodes(tree);
-    var vis = d3sparql.select(opts.selector, "circlepack").append("svg").attr("width", w).attr("height", h).append("g").attr("transform", "translate(" + (w - r) / 2 + "," + (h - r) / 2 + ")");
+    let node = tree;
+    let nodes = pack.nodes(tree);
+    let vis = d3sparql.select(opts.selector, "circlepack").append("svg").attr("width", w).attr("height", h).append("g").attr("transform", "translate(" + (w - r) / 2 + "," + (h - r) / 2 + ")");
     vis.selectAll("circle").data(nodes).enter().append("circle").attr("class", function (d) {
       return d.children ? "parent" : "child";
     }).attr("cx", function (d) {
@@ -1371,10 +1368,10 @@ define(function () { 'use strict';
     });
 
     function zoom(d, i) {
-      var k = r / d.r / 2;
+      let k = r / d.r / 2;
       x.domain([d.x - d.r, d.x + d.r]);
       y.domain([d.y - d.r, d.y + d.r]);
-      var t = vis.transition().duration(d3.event.altKey ? 2000 : 500);
+      let t = vis.transition().duration(d3.event.altKey ? 2000 : 500);
       t.selectAll("circle").attr("cx", function (d) {
         return x(d.x);
       }).attr("cy", function (d) {
@@ -1411,7 +1408,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.treemap(json, config)
       }
 
@@ -1431,8 +1428,8 @@ define(function () { 'use strict';
 
   d3sparql.treemap = function (json, config) {
     config = config || {};
-    var tree = json.head && json.results ? d3sparql.tree(json, config) : json;
-    var opts = {
+    let tree = json.head && json.results ? d3sparql.tree(json, config) : json;
+    let opts = {
       "width": config.width || 800,
       "height": config.height || 500,
       "count": config.count || false,
@@ -1445,9 +1442,9 @@ define(function () { 'use strict';
       },
       "selector": config.selector || null
     };
-    var width = opts.width - opts.margin.left - opts.margin.right;
-    var height = opts.height - opts.margin.top - opts.margin.bottom;
-    var color = opts.color;
+    let width = opts.width - opts.margin.left - opts.margin.right;
+    let height = opts.height - opts.margin.top - opts.margin.bottom;
+    let color = opts.color;
 
     function count(d) {
       return 1;
@@ -1457,9 +1454,9 @@ define(function () { 'use strict';
       return d.value;
     }
 
-    var treemap = d3.layout.treemap().size([width, height]).sticky(true).value(opts.count ? count : size);
-    var div = d3sparql.select(opts.selector, "treemap").style("position", "relative").style("width", opts.width + "px").style("height", opts.height + "px").style("left", opts.margin.left + "px").style("top", opts.margin.top + "px");
-    var node = div.datum(tree).selectAll(".node").data(treemap.nodes).enter().append("div").attr("class", "node").call(position).style("background", function (d) {
+    let treemap = d3.layout.treemap().size([width, height]).sticky(true).value(opts.count ? count : size);
+    let div = d3sparql.select(opts.selector, "treemap").style("position", "relative").style("width", opts.width + "px").style("height", opts.height + "px").style("left", opts.margin.left + "px").style("top", opts.margin.top + "px");
+    let node = div.datum(tree).selectAll(".node").data(treemap.nodes).enter().append("div").attr("class", "node").call(position).style("background", function (d) {
       return d.children ? color(d.name) : null;
     }).text(function (d) {
       return d.children ? null : d.name;
@@ -1509,7 +1506,7 @@ define(function () { 'use strict';
       d3sparql.query(endpoint, sparql, render)
 
       function render(json) {
-        var config = { ... }
+        let config = { ... }
         d3sparql.treemapzoom(json, config)
       }
 
@@ -1530,8 +1527,8 @@ define(function () { 'use strict';
 
   d3sparql.treemapzoom = function (json, config) {
     config = config || {};
-    var tree = json.head && json.results ? d3sparql.tree(json, config) : json;
-    var opts = {
+    let tree = json.head && json.results ? d3sparql.tree(json, config) : json;
+    let opts = {
       "width": config.width || 800,
       "height": config.height || 500,
       "margin": config.margin || {
@@ -1544,20 +1541,20 @@ define(function () { 'use strict';
       "format": config.format || d3.format(",d"),
       "selector": config.selector || null
     };
-    var width = opts.width - opts.margin.left - opts.margin.right;
-    var height = opts.height - opts.margin.top - opts.margin.bottom;
-    var color = opts.color;
-    var format = opts.format;
-    var transitioning;
-    var x = d3.scale.linear().domain([0, width]).range([0, width]);
-    var y = d3.scale.linear().domain([0, height]).range([0, height]);
-    var treemap = d3.layout.treemap().children(function (d, depth) {
+    let width = opts.width - opts.margin.left - opts.margin.right;
+    let height = opts.height - opts.margin.top - opts.margin.bottom;
+    let color = opts.color;
+    let format = opts.format;
+    let transitioning;
+    let x = d3.scale.linear().domain([0, width]).range([0, width]);
+    let y = d3.scale.linear().domain([0, height]).range([0, height]);
+    let treemap = d3.layout.treemap().children(function (d, depth) {
       return depth ? null : d.children;
     }).sort(function (a, b) {
       return a.value - b.value;
     }).ratio(height / width * 0.5 * (1 + Math.sqrt(5))).round(false);
-    var svg = d3sparql.select(opts.selector, "treemapzoom").append("svg").attr("width", opts.width).attr("height", opts.height).style("margin-left", -opts.margin.left + "px").style("margin.right", -opts.margin.right + "px").append("g").attr("transform", "translate(" + opts.margin.left + "," + opts.margin.top + ")").style("shape-rendering", "crispEdges");
-    var grandparent = svg.append("g").attr("class", "grandparent");
+    let svg = d3sparql.select(opts.selector, "treemapzoom").append("svg").attr("width", opts.width).attr("height", opts.height).style("margin-left", -opts.margin.left + "px").style("margin.right", -opts.margin.right + "px").append("g").attr("transform", "translate(" + opts.margin.left + "," + opts.margin.top + ")").style("shape-rendering", "crispEdges");
+    let grandparent = svg.append("g").attr("class", "grandparent");
     grandparent.append("rect").attr("y", -opts.margin.top).attr("width", width).attr("height", opts.margin.top).attr("fill", "#666666");
     grandparent.append("text").attr("x", 6).attr("y", 6 - opts.margin.top).attr("dy", ".75em").attr("stroke", "#ffffff").attr("fill", "#ffffff");
     initialize(tree);
@@ -1596,8 +1593,8 @@ define(function () { 'use strict';
 
     function display(d) {
       grandparent.datum(d.parent).on("click", transition).select("text").text(name(d));
-      var g1 = svg.insert("g", ".grandparent").datum(d).attr("class", "depth");
-      var g = g1.selectAll("g").data(d.children).enter().append("g");
+      let g1 = svg.insert("g", ".grandparent").datum(d).attr("class", "depth");
+      let g = g1.selectAll("g").data(d.children).enter().append("g");
       g.filter(function (d) {
         return d.children;
       }).classed("children", true).on("click", transition);
@@ -1614,7 +1611,7 @@ define(function () { 'use strict';
       function transition(d) {
         if (transitioning || !d) return;
         transitioning = true;
-        var g2 = display(d),
+        let g2 = display(d),
             t1 = g1.transition().duration(750),
             t2 = g2.transition().duration(750); // Update the domain only after entering new elements.
 
@@ -1679,8 +1676,8 @@ define(function () { 'use strict';
 
     Options:
       config = {
-        "var_lat":  "lat",     // SPARQL variable name for latitude (optional; default is the 1st variable)
-        "var_lng":  "lng",     // SPARQL variable name for longitude (optional; default is the 2nd variable)
+        "let_lat":  "lat",     // SPARQL letiable name for latitude (optional; default is the 1st letiable)
+        "let_lng":  "lng",     // SPARQL letiable name for longitude (optional; default is the 2nd letiable)
         "width":    960,       // canvas width (optional)
         "height":   480,       // canvas height (optional)
         "radius":   5,         // circle radius (optional)
@@ -1707,11 +1704,11 @@ define(function () { 'use strict';
 
   d3sparql.coordmap = function (json, config) {
     config = config || {};
-    var head = json.head.vars;
-    var data = json.results.bindings;
-    var opts = {
-      "var_lat": config.var_lat || head[0] || "lat",
-      "var_lng": config.var_lng || head[1] || "lng",
+    let head = json.head.lets;
+    let data = json.results.bindings;
+    let opts = {
+      "let_lat": config.let_lat || head[0] || "lat",
+      "let_lng": config.let_lng || head[1] || "lng",
       "width": config.width || 960,
       "height": config.height || 480,
       "radius": config.radius || 5,
@@ -1719,10 +1716,10 @@ define(function () { 'use strict';
       "topojson": config.topojson || "world-50m.json",
       "selector": config.selector || null
     };
-    var projection = d3.geo.equirectangular().scale(153).translate([opts.width / 2, opts.height / 2]).precision(.1);
-    var path = d3.geo.path().projection(projection);
-    var graticule = d3.geo.graticule();
-    var svg = d3sparql.select(opts.selector, "coordmap").append("svg").attr("width", opts.width).attr("height", opts.height);
+    let projection = d3.geo.equirectangular().scale(153).translate([opts.width / 2, opts.height / 2]).precision(.1);
+    let path = d3.geo.path().projection(projection);
+    let graticule = d3.geo.graticule();
+    let svg = d3sparql.select(opts.selector, "coordmap").append("svg").attr("width", opts.width).attr("height", opts.height);
     svg.append("path").datum(graticule.outline).attr("fill", "#a4bac7").attr("d", path);
     svg.append("path").datum(graticule).attr("fill", "none").attr("stroke", "#333333").attr("stroke-width", ".5px").attr("stroke-opacity", ".5").attr("d", path);
     d3.json(opts.topojson, function (error, world) {
@@ -1731,7 +1728,7 @@ define(function () { 'use strict';
         return a !== b;
       })).attr("class", "boundary").attr("fill", "none").attr("stroke", "#a5967e").attr("stroke-width", ".5px").attr("d", path);
       svg.selectAll(".pin").data(data).enter().append("circle", ".pin").attr("fill", opts.color).attr("r", opts.radius).attr("stroke", "#455346").attr("transform", function (d) {
-        return "translate(" + projection([d[opts.var_lng].value, d[opts.var_lat].value]) + ")";
+        return "translate(" + projection([d[opts.let_lng].value, d[opts.let_lat].value]) + ")";
       });
     });
   };
@@ -1740,8 +1737,8 @@ define(function () { 'use strict';
 
     Options:
       config = {
-        "label":       "name",    // SPARQL variable name for location names (optional; default is the 1st variable)
-        "value":       "size",    // SPARQL variable name for numerical values (optional; default is the 2nd variable)
+        "label":       "name",    // SPARQL letiable name for location names (optional; default is the 1st letiable)
+        "value":       "size",    // SPARQL letiable name for numerical values (optional; default is the 2nd letiable)
         "width":       1000,      // canvas width (optional)
         "height":      1000,      // canvas height (optional)
         "color_max":   "blue",    // color for maximum value (optional)
@@ -1774,9 +1771,9 @@ define(function () { 'use strict';
 
   d3sparql.namedmap = function (json, config) {
     config = config || {};
-    var head = json.head.vars;
-    var data = json.results.bindings;
-    var opts = {
+    let head = json.head.lets;
+    let data = json.results.bindings;
+    let opts = {
       "label": config.label || head[0] || "label",
       "value": config.value || head[1] || "value",
       "width": config.width || 1000,
@@ -1792,43 +1789,44 @@ define(function () { 'use strict';
       "scale": config.scale || 10000,
       "selector": config.selector || null
     };
-    var size = d3.nest().key(function (d) {
+    let size = d3.nest().key(function (d) {
       return d[opts.label].value;
     }).rollup(function (d) {
       return d3.sum(d, function (d) {
         return parseInt(d[opts.value].value);
       });
     }).map(data, d3.map);
-    var extent = d3.extent(d3.map(size).values());
+    let extent = d3.extent(d3.map(size).values());
 
     if (d3sparql.debug) {
       console.log(JSON.stringify(size));
     }
 
-    var svg = d3sparql.select(opts.selector, "namedmap").append("svg").attr("width", opts.width).attr("height", opts.height);
+    let svg = d3sparql.select(opts.selector, "namedmap").append("svg").attr("width", opts.width).attr("height", opts.height);
     d3.json(opts.topojson, function (topojson_map) {
-      var geo = topojson.object(topojson_map, topojson_map.objects[opts.mapname]).geometries;
-      var projection = d3.geo.mercator().center([opts.center_lng, opts.center_lat]).translate([opts.width / 2, opts.height / 2]).scale(opts.scale);
-      var path = d3.geo.path().projection(projection);
+      let geo = topojson.object(topojson_map, topojson_map.objects[opts.mapname]).geometries;
+      let projection = d3.geo.mercator().center([opts.center_lng, opts.center_lat]).translate([opts.width / 2, opts.height / 2]).scale(opts.scale);
+      let path = d3.geo.path().projection(projection);
+      let scale;
 
       switch (opts.color_scale) {
         case "log":
-          var scale = d3.scale.log();
+          scale = d3.scale.log();
           break;
 
         default:
-          var scale = d3.scale.linear();
+          scale = d3.scale.linear();
           break;
       }
 
-      var color = scale.domain(extent).range([opts.color_min, opts.color_max]);
+      let color = scale.domain(extent).range([opts.color_min, opts.color_max]);
       svg.selectAll("path").data(geo).enter().append("path").attr("d", path).attr("stroke", "black").attr("stroke-width", 0.5).style("fill", function (d, i) {
         // map SPARQL results to colors
         return color(size[d.properties[opts.keyname]]);
       });
       svg.selectAll(".place-label").data(geo).enter().append("text").attr("font-size", "8px").attr("class", "place-label").attr("transform", function (d) {
-        var lat = d.properties.latitude;
-        var lng = d.properties.longitude;
+        let lat = d.properties.latitude;
+        let lng = d.properties.longitude;
         return "translate(" + projection([lng, lat]) + ")";
       }).attr("dx", "-1.5em").text(function (d) {
         return d.properties[opts.keyname];
@@ -1847,8 +1845,8 @@ define(function () { 'use strict';
 
 
   d3sparql.toggle = function () {
-    var button = d3.select("#button");
-    var elem = d3.select("#sparql");
+    let button = d3.select("#button");
+    let elem = d3.select("#sparql");
 
     if (elem.style("display") === "none") {
       elem.style("display", "inline");
