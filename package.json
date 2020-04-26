@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "SPARQL D3 Plugin",
   "main": "d3sparql.js",
+  "types": "d3sparql.d.ts",
   "scripts": {
     "build": "npm run build:amd",
     "build:amd": "rollup --config rollup.config.amd.js -o dist/d3sparql.amd.js",
