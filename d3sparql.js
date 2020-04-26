@@ -7,10 +7,11 @@
 //   Initial version: 2013-01-28
 //
 
-var d3sparql = {
+const d3sparql = {
   version: "d3sparql.js version 2018-05-04",
   debug: false  // set to true for showing debug information
 }
+
 
 /*
   Execute a SPARQL query and pass the result to a given callback function
@@ -2046,5 +2047,4 @@ d3sparql.frameheight = function(height) {
   d3.select(self.frameElement).style("height", height + "px")
 }
 
-/* for Node.js */
-//module.exports = d3sparql
+export default d3sparql;

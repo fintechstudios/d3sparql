@@ -1,0 +1,36 @@
+{
+  "name": "d3sparql",
+  "version": "1.0.0",
+  "description": "SPARQL D3 Plugin",
+  "main": "d3sparql.js",
+  "scripts": {
+    "build": "rollup --config -o dist/d3sparql.amd.js",
+    "clean": "rimraf dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fintechstudios/d3sparql.git"
+  },
+  "keywords": [
+    "sparql",
+    "d3",
+    "d3-plugin"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fintechstudios/d3sparql/issues"
+  },
+  "homepage": "https://github.com/fintechstudios/d3sparql#readme",
+  "devDependencies": {
+    "@babel/core": "^7.7.5",
+    "@babel/plugin-transform-modules-commonjs": "^7.7.5",
+    "@babel/preset-env": "^7.9.5",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.7.2",
+    "rollup-plugin-babel": "^4.4.0"
+  },
+  "dependencies": {
+    "npm": "^6.14.4"
+  }
+}
