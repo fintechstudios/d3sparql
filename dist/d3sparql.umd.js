@@ -1,4 +1,4 @@
-/* d3sparql 2020-04-26T02:39:42.756Z */
+/* d3sparql 2020-04-26T02:43:02.767Z */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('d3')) :
   typeof define === 'function' && define.amd ? define(['d3'], factory) :
@@ -16,8 +16,18 @@
 
   function debug(messageGetter) {
     if (d3sparql.debug) {
-      const message = typeof messageGetter === 'function' ? messageGetter() : messageGetter;
-      console.debug(message);
+      switch (typeof messageGetter) {
+        case 'function':
+          console.debug(messageGetter());
+          break;
+
+        case 'object':
+          console.debug(JSON.stringify(messageGetter));
+          break;
+
+        default:
+          console.debug(messageGetter);
+      }
     }
   }
   /*
@@ -315,9 +325,9 @@
     debug(table);
     let thead = table.append('thead');
     let tbody = table.append('tbody');
-    thead.append('tr').selectAll('th').data(head).enter().append('th').text(col => col);
+    thead.append('tr').selectAll('th').data(opts.columns).enter().append('th').text(col => col);
     let rows = tbody.selectAll('tr').data(data).enter().append('tr');
-    let cells = rows.selectAll('td').data(row => columns.map(col => row[col] ? row[col].value : '')).enter().append('td').text(val => val);
+    let cells = rows.selectAll('td').data(row => opts.columns.map(col => row[col] ? row[col].value : '')).enter().append('td').text(val => val);
     debug("Table cells");
     debug(cells); // default CSS
 

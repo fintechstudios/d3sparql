@@ -16,8 +16,16 @@ const d3sparql = {
 
 function debug(messageGetter) {
   if (d3sparql.debug) {
-    const message = typeof messageGetter === 'function' ? messageGetter() : messageGetter;
-    console.debug(message);
+    switch (typeof messageGetter) {
+      case 'function':
+        console.debug(messageGetter());
+        break;
+      case 'object':
+        console.debug(JSON.stringify(messageGetter));
+        break;
+      default:
+        console.debug(messageGetter);
+    }
   }
 }
 
@@ -291,7 +299,7 @@ d3sparql.htmltable = function (json, config = {}) {
   let tbody = table.append('tbody');
   thead.append('tr')
     .selectAll('th')
-    .data(head)
+    .data(opts.columns)
     .enter()
     .append('th')
     .text((col) => col);
@@ -300,7 +308,7 @@ d3sparql.htmltable = function (json, config = {}) {
     .enter()
     .append('tr');
   let cells = rows.selectAll('td')
-    .data((row) => columns.map((col) => row[col] ? row[col].value : ''))
+    .data((row) => opts.columns.map((col) => row[col] ? row[col].value : ''))
     .enter()
     .append('td')
     .text((val) => val);

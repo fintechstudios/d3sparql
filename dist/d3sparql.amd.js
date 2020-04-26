@@ -1,4 +1,4 @@
-/* d3sparql 2020-04-26T02:39:41.990Z */
+/* d3sparql 2020-04-26T02:43:02.007Z */
 define(['d3'], function (d3) { 'use strict';
 
   d3 = d3 && Object.prototype.hasOwnProperty.call(d3, 'default') ? d3['default'] : d3;
@@ -12,8 +12,18 @@ define(['d3'], function (d3) { 'use strict';
 
   function debug(messageGetter) {
     if (d3sparql.debug) {
-      const message = typeof messageGetter === 'function' ? messageGetter() : messageGetter;
-      console.debug(message);
+      switch (typeof messageGetter) {
+        case 'function':
+          console.debug(messageGetter());
+          break;
+
+        case 'object':
+          console.debug(JSON.stringify(messageGetter));
+          break;
+
+        default:
+          console.debug(messageGetter);
+      }
     }
   }
   /*
@@ -311,9 +321,9 @@ define(['d3'], function (d3) { 'use strict';
     debug(table);
     let thead = table.append('thead');
     let tbody = table.append('tbody');
-    thead.append('tr').selectAll('th').data(head).enter().append('th').text(col => col);
+    thead.append('tr').selectAll('th').data(opts.columns).enter().append('th').text(col => col);
     let rows = tbody.selectAll('tr').data(data).enter().append('tr');
-    let cells = rows.selectAll('td').data(row => columns.map(col => row[col] ? row[col].value : '')).enter().append('td').text(val => val);
+    let cells = rows.selectAll('td').data(row => opts.columns.map(col => row[col] ? row[col].value : '')).enter().append('td').text(val => val);
     debug("Table cells");
     debug(cells); // default CSS
 
