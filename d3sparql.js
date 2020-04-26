@@ -115,9 +115,7 @@ d3sparql.query = function (endpoint, sparql, callback) {
   TODO:
     Should follow the convention in the miserables.json https://gist.github.com/mbostock/4062045 to contain group for nodes and value for edges.
 */
-d3sparql.graph = function (json, config) {
-  config = config || {};
-
+d3sparql.graph = function (json, config = {}) {
   let head = json.head.lets || [];
   let data = json.results.bindings;
 
@@ -845,9 +843,7 @@ d3sparql.scatterplot = function (json, config = {}) {
   TODO:
     Try other d3.layout.force options.
 */
-d3sparql.forcegraph = function (json, config) {
-  config = config || {};
-
+d3sparql.forcegraph = function (json, config = {}) {
   let graph = (json.head && json.results) ? d3sparql.graph(json, config) : json;
 
   let scale = d3.scale.linear()
