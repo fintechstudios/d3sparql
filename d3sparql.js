@@ -183,9 +183,7 @@ d3sparql.graph = function(json, config) {
       d3sparql.treemapzoom(json, config)
     }
 */
-d3sparql.tree = function(json, config) {
-  config = config || {}
-
+d3sparql.tree = function(json, config = {}) {
   let head = json.head.lets
   let data = json.results.bindings
 
@@ -201,11 +199,11 @@ d3sparql.tree = function(json, config) {
   let root = data[0][opts.root].value
   let parent = true;
   let child = true;
-  let children = true
+  let children = true;
   for (let i = 0; i < data.length; i++) {
     parent = data[i][opts.parent].value
     child = data[i][opts.child].value
-    if (parent != child) {
+    if (parent !== child) {
       if (pair.has(parent)) {
         children = pair.get(parent)
         children.push(child)
@@ -549,9 +547,7 @@ d3sparql.barchart = function(json, config) {
     }
     </style>
 */
-d3sparql.piechart = function(json, config) {
-  config = config || {}
-
+d3sparql.piechart = function(json, config = {}) {
   let head = json.head.lets
   let data = json.results.bindings
 
@@ -577,7 +573,9 @@ d3sparql.piechart = function(json, config) {
     //.sort(null)
     .value(function(d) { return d[opts.size].value })
 
-  let svg = d3sparql.select(opts.selector, "piechart").append("svg")
+  let svg = d3sparql
+    .select(opts.selector, "piechart")
+    .append("svg")
     .attr("width", opts.width)
     .attr("height", opts.height)
     .append("g")
@@ -654,9 +652,7 @@ d3sparql.piechart = function(json, config) {
     }
     </style>
 */
-d3sparql.scatterplot = function(json, config) {
-  config = config || {}
-
+d3sparql.scatterplot = function(json, config = {}) {
   let head = json.head.lets
   let data = json.results.bindings
 
@@ -1240,9 +1236,7 @@ d3sparql.dendrogram = function(json, config) {
     }
     </style>
 */
-d3sparql.sunburst = function(json, config) {
-  config = config || {}
-
+d3sparql.sunburst = function(json, config = {}) {
   let tree = (json.head && json.results) ? d3sparql.tree(json, config) : json
 
   let opts = {
@@ -2026,6 +2020,11 @@ d3sparql.namedmap = function(json, config) {
   })
 }
 
+/**
+ * @param {string|EventTarget} selector
+ * @param {string} type
+ * @returns {d3.Selection<any>}
+ */
 d3sparql.select = function(selector, type) {
   if (selector) {
     return d3.select(selector).html("").append("div").attr("class", "d3sparql " + type)

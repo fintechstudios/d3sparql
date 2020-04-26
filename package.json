@@ -4,7 +4,10 @@
   "description": "SPARQL D3 Plugin",
   "main": "d3sparql.js",
   "scripts": {
-    "build": "rollup --config -o dist/d3sparql.amd.js",
+    "build": "npm run build:amd",
+    "build:amd": "rollup --config rollup.config.amd.js -o dist/d3sparql.amd.js",
+    "build:umd": "rollup --config rollup.config.umd.js -o dist/d3sparql.umd.js",
+    "serve": "http-server .",
     "clean": "rimraf dist"
   },
   "repository": {
@@ -26,6 +29,8 @@
     "@babel/core": "^7.7.5",
     "@babel/plugin-transform-modules-commonjs": "^7.7.5",
     "@babel/preset-env": "^7.9.5",
+    "@types/d3": "^3.5.43",
+    "http-server": "^0.12.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.7.2",
     "rollup-plugin-babel": "^4.4.0"
