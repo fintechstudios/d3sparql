@@ -118,7 +118,7 @@ d3sparql.query = function (endpoint, sparql, callback) {
 d3sparql.graph = function (json, config) {
   config = config || {};
 
-  let head = json.head.lets;
+  let head = json.head.lets || [];
   let data = json.results.bindings;
 
   let opts = {
@@ -191,7 +191,7 @@ d3sparql.graph = function (json, config) {
     }
 */
 d3sparql.tree = function (json, config = {}) {
-  let head = json.head.lets;
+  let head = json.head.lets || [];
   let data = json.results.bindings;
 
   let opts = {
@@ -284,7 +284,7 @@ d3sparql.tree = function (json, config = {}) {
 d3sparql.htmltable = function (json, config) {
   config = config || {};
 
-  let head = json.head.lets;
+  let head = json.head.lets || [];
   let data = json.results.bindings;
 
   let opts = {
@@ -360,7 +360,7 @@ d3sparql.htmltable = function (json, config) {
 d3sparql.htmlhash = function (json, config) {
   config = config || {};
 
-  let head = json.head.lets;
+  let head = json.head.lets || [];
   let data = json.results.bindings[0];
 
   let opts = {
@@ -448,7 +448,7 @@ d3sparql.htmlhash = function (json, config) {
 d3sparql.barchart = function (json, config) {
   config = config || {};
 
-  let head = json.head.lets;
+  let head = json.head.lets || [];
   let data = json.results.bindings;
 
   let opts = {
@@ -583,7 +583,7 @@ d3sparql.barchart = function (json, config) {
     </style>
 */
 d3sparql.piechart = function (json, config = {}) {
-  let head = json.head.lets;
+  let head = json.head.lets || [];
   let data = json.results.bindings;
 
   let opts = {
@@ -696,7 +696,7 @@ d3sparql.piechart = function (json, config = {}) {
     </style>
 */
 d3sparql.scatterplot = function (json, config = {}) {
-  let head = json.head.lets;
+  let head = json.head.lets || [];
   let data = json.results.bindings;
 
   let opts = {
@@ -2055,7 +2055,7 @@ d3sparql.treemapzoom = function (json, config) {
 d3sparql.coordmap = function (json, config) {
   config = config || {};
 
-  let head = json.head.lets;
+  let head = json.head.lets || [];
   let data = json.results.bindings;
 
   let opts = {
@@ -2163,7 +2163,7 @@ d3sparql.coordmap = function (json, config) {
 d3sparql.namedmap = function (json, config) {
   config = config || {};
 
-  let head = json.head.lets;
+  let head = json.head.lets || [];
   let data = json.results.bindings;
 
   let opts = {
