@@ -1,4 +1,4 @@
-/* d3sparql 2020-04-26T02:12:07.270Z */
+/* d3sparql 2020-04-26T02:12:51.809Z */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('d3')) :
   typeof define === 'function' && define.amd ? define(['d3'], factory) :
@@ -9,7 +9,7 @@
 
   //
   const d3sparql = {
-    version: 'd3sparql.js version 2018-05-04',
+    version: 'd3sparql.js version 2020-04-25',
     debug: false // set to true for showing debug information
 
   };

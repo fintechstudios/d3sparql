@@ -1,11 +1,11 @@
-/* d3sparql 2020-04-26T02:12:06.542Z */
+/* d3sparql 2020-04-26T02:12:51.070Z */
 define(['d3'], function (d3) { 'use strict';
 
   d3 = d3 && Object.prototype.hasOwnProperty.call(d3, 'default') ? d3['default'] : d3;
 
   //
   const d3sparql = {
-    version: 'd3sparql.js version 2018-05-04',
+    version: 'd3sparql.js version 2020-04-25',
     debug: false // set to true for showing debug information
 
   };
