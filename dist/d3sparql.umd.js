@@ -1,4 +1,4 @@
-/* d3sparql 2020-04-26T02:15:03.738Z */
+/* d3sparql 2020-04-26T02:32:58.532Z */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('d3')) :
   typeof define === 'function' && define.amd ? define(['d3'], factory) :
@@ -119,8 +119,7 @@
   */
 
 
-  d3sparql.graph = function (json, config) {
-    config = config || {};
+  d3sparql.graph = function (json, config = {}) {
     let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
@@ -314,27 +313,19 @@
   */
 
 
-  d3sparql.htmltable = function (json, config) {
-    config = config || {};
+  d3sparql.htmltable = function (json, config = {}) {
     let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
-      'selector': config.selector || null
+      columns: config.columns || head,
+      selector: config.selector || null
     };
     let table = d3sparql.select(opts.selector, 'htmltable').append('table').attr('class', 'table table-bordered');
     let thead = table.append('thead');
     let tbody = table.append('tbody');
-    thead.append('tr').selectAll('th').data(head).enter().append('th').text(function (col) {
-      return col;
-    });
+    thead.append('tr').selectAll('th').data(head).enter().append('th').text(col => col);
     let rows = tbody.selectAll('tr').data(data).enter().append('tr');
-    let cells = rows.selectAll('td').data(function (row) {
-      return head.map(function (col) {
-        return row[col] ? row[col].value : '';
-      });
-    }).enter().append('td').text(function (val) {
-      return val;
-    }); // default CSS
+    let cells = rows.selectAll('td').data(row => columns.map(col => row[col] ? row[col].value : '')).enter().append('td').text(val => val); // default CSS
 
     table.style({
       'margin': '10px'
@@ -768,8 +759,7 @@
   */
 
 
-  d3sparql.forcegraph = function (json, config) {
-    config = config || {};
+  d3sparql.forcegraph = function (json, config = {}) {
     let graph = json.head && json.results ? d3sparql.graph(json, config) : json;
     let scale = d3.scale.linear().domain(d3.extent(graph.nodes, function (d) {
       return parseFloat(d.value);

@@ -279,14 +279,13 @@ d3sparql.tree = function (json, config = {}) {
     }
     </style>
 */
-d3sparql.htmltable = function (json, config) {
-  config = config || {};
-
+d3sparql.htmltable = function (json, config = {}) {
   let head = json.head.lets || [];
   let data = json.results.bindings;
 
   let opts = {
-    'selector': config.selector || null
+    columns: config.columns || head,
+    selector: config.selector || null
   };
 
   let table = d3sparql.select(opts.selector, 'htmltable').append('table').attr('class', 'table table-bordered');
@@ -297,24 +296,16 @@ d3sparql.htmltable = function (json, config) {
     .data(head)
     .enter()
     .append('th')
-    .text(function (col) {
-      return col;
-    });
+    .text((col) => col);
   let rows = tbody.selectAll('tr')
     .data(data)
     .enter()
     .append('tr');
   let cells = rows.selectAll('td')
-    .data(function (row) {
-      return head.map(function (col) {
-        return row[col] ? row[col].value : '';
-      });
-    })
+    .data((row) => columns.map((col) => row[col] ? row[col].value : ''))
     .enter()
     .append('td')
-    .text(function (val) {
-      return val;
-    });
+    .text((val) => val);
 
   // default CSS
   table.style({
