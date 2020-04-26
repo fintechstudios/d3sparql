@@ -287,23 +287,22 @@ d3sparql.htmltable = function (json, config = {}) {
   let head = json.head.lets || [];
   let data = json.results.bindings;
 
-  let opts = {
-    columns: config.columns || head,
-    selector: config.selector || null,
-    limit: config.limit || data.length,
-    offset: config.offset !== undefined ? config.offset : 0,
-  };
+  const columns = config.columns || head;
+  const headers = config.headers || columns;
+  const selector = config.selector || null;
+  const limit =  config.limit !== undefined ? config.limit : data.length;
+  const offset = config.offset !== undefined ? config.offset : 0;
 
   data = data.slice(opts.offset, opts.offset + opts.limit);
 
-  let table = d3sparql.select(opts.selector, 'htmltable').append('table').attr('class', 'table table-bordered');
+  let table = d3sparql.select(selector, 'htmltable').append('table').attr('class', 'table table-bordered');
   debug("Table");
   debug(table);
   let thead = table.append('thead');
   let tbody = table.append('tbody');
   thead.append('tr')
     .selectAll('th')
-    .data(opts.columns)
+    .data(headers)
     .enter()
     .append('th')
     .text((col) => col);
@@ -312,7 +311,7 @@ d3sparql.htmltable = function (json, config = {}) {
     .enter()
     .append('tr');
   let cells = rows.selectAll('td')
-    .data((row) => opts.columns.map((col) => row[col] ? row[col].value : ''))
+    .data((row) => columns.map((col) => row[col] ? row[col].value : ''))
     .enter()
     .append('td')
     .text((val) => val);
