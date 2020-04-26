@@ -293,7 +293,7 @@ d3sparql.htmltable = function (json, config = {}) {
   const limit =  config.limit !== undefined ? config.limit : data.length;
   const offset = config.offset !== undefined ? config.offset : 0;
 
-  data = data.slice(opts.offset, opts.offset + opts.limit);
+  data = data.slice(offset, offset + limit);
 
   let table = d3sparql.select(selector, 'htmltable').append('table').attr('class', 'table table-bordered');
   debug("Table");

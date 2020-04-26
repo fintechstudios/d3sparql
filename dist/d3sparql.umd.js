@@ -1,4 +1,4 @@
-/* d3sparql 2020-04-26T03:03:42.420Z */
+/* d3sparql 2020-04-26T03:05:05.332Z */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('d3')) :
   typeof define === 'function' && define.amd ? define(['d3'], factory) :
@@ -321,7 +321,7 @@
     const selector = config.selector || null;
     const limit = config.limit !== undefined ? config.limit : data.length;
     const offset = config.offset !== undefined ? config.offset : 0;
-    data = data.slice(opts.offset, opts.offset + opts.limit);
+    data = data.slice(offset, offset + limit);
     let table = d3sparql.select(selector, 'htmltable').append('table').attr('class', 'table table-bordered');
     debug("Table");
     debug(table);
