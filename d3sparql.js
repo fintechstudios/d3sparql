@@ -14,6 +14,12 @@ const d3sparql = {
   debug: false  // set to true for showing debug information
 };
 
+function debug(messageGetter) {
+  if (d3sparql.debug) {
+    const message = typeof messageGetter === 'function' ? messageGetter() : messageGetter;
+    console.debug(message);
+  }
+}
 
 /*
   Execute a SPARQL query and pass the result to a given callback function
@@ -59,15 +65,11 @@ const d3sparql = {
     </html>
 */
 d3sparql.fetch = function (url, callback) {
-  if (d3sparql.debug) {
-    console.log(url);
-  }
+  debug(url);
   let mime = 'application/sparql-results+json';
   d3.xhr(url, mime, function (request) {
     let json = request.responseText;
-    if (d3sparql.debug) {
-      console.log(json);
-    }
+    debug(json);
     callback(JSON.parse(json));
   });
   /*
@@ -82,9 +84,7 @@ d3sparql.fetch = function (url, callback) {
 
 d3sparql.query = function (endpoint, sparql, callback) {
   let url = endpoint + '?query=' + encodeURIComponent(sparql);
-  if (d3sparql.debug) {
-    console.log(endpoint);
-  }
+  debug(endpoint);
   d3sparql.fetch(url, callback);
 };
 
@@ -152,9 +152,7 @@ d3sparql.graph = function (json, config = {}) {
     }
     graph.links.push({ 'source': check.get(key1), 'target': check.get(key2) });
   }
-  if (d3sparql.debug) {
-    console.log(JSON.stringify(graph));
-  }
+  debug(() => JSON.stringify(graph));
   return graph;
 };
 
@@ -244,9 +242,7 @@ d3sparql.tree = function (json, config = {}) {
 
   let tree = traverse(root);
 
-  if (d3sparql.debug) {
-    console.log(JSON.stringify(tree));
-  }
+  debug(() => JSON.stringify(tree));
   return tree;
 };
 
@@ -289,6 +285,8 @@ d3sparql.htmltable = function (json, config = {}) {
   };
 
   let table = d3sparql.select(opts.selector, 'htmltable').append('table').attr('class', 'table table-bordered');
+  debug("Table");
+  debug(table);
   let thead = table.append('thead');
   let tbody = table.append('tbody');
   thead.append('tr')
@@ -306,6 +304,9 @@ d3sparql.htmltable = function (json, config = {}) {
     .enter()
     .append('td')
     .text((val) => val);
+
+  debug("Table cells");
+  debug(cells);
 
   // default CSS
   table.style({
@@ -2181,9 +2182,7 @@ d3sparql.namedmap = function (json, config) {
     }).map(data, d3.map);
   let extent = d3.extent((d3.map(size).values()));
 
-  if (d3sparql.debug) {
-    console.log(JSON.stringify(size));
-  }
+  debug(() => JSON.stringify(size));
 
   let svg = d3sparql.select(opts.selector, 'namedmap').append('svg')
     .attr('width', opts.width)
