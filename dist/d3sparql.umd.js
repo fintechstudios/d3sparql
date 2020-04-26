@@ -1,4 +1,4 @@
-/* d3sparql 2020-04-26T02:12:51.809Z */
+/* d3sparql 2020-04-26T02:15:03.738Z */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('d3')) :
   typeof define === 'function' && define.amd ? define(['d3'], factory) :
@@ -121,7 +121,7 @@
 
   d3sparql.graph = function (json, config) {
     config = config || {};
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'key1': config.key1 || head[0] || 'key1',
@@ -211,7 +211,7 @@
 
 
   d3sparql.tree = function (json, config = {}) {
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'root': config.root || head[0],
@@ -316,7 +316,7 @@
 
   d3sparql.htmltable = function (json, config) {
     config = config || {};
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'selector': config.selector || null
@@ -377,7 +377,7 @@
 
   d3sparql.htmlhash = function (json, config) {
     config = config || {};
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings[0];
     let opts = {
       'selector': config.selector || null
@@ -460,7 +460,7 @@
 
   d3sparql.barchart = function (json, config) {
     config = config || {};
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'label_x': config.label_x || head[0],
@@ -562,7 +562,7 @@
 
 
   d3sparql.piechart = function (json, config = {}) {
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'label': config.label || head[0],
@@ -649,7 +649,7 @@
 
 
   d3sparql.scatterplot = function (json, config = {}) {
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'label_x': config.label_x || head[0] || 'x',
@@ -1706,7 +1706,7 @@
 
   d3sparql.coordmap = function (json, config) {
     config = config || {};
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'let_lat': config.let_lat || head[0] || 'lat',
@@ -1773,7 +1773,7 @@
 
   d3sparql.namedmap = function (json, config) {
     config = config || {};
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'label': config.label || head[0] || 'label',

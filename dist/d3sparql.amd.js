@@ -1,4 +1,4 @@
-/* d3sparql 2020-04-26T02:12:51.070Z */
+/* d3sparql 2020-04-26T02:15:02.993Z */
 define(['d3'], function (d3) { 'use strict';
 
   d3 = d3 && Object.prototype.hasOwnProperty.call(d3, 'default') ? d3['default'] : d3;
@@ -117,7 +117,7 @@ define(['d3'], function (d3) { 'use strict';
 
   d3sparql.graph = function (json, config) {
     config = config || {};
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'key1': config.key1 || head[0] || 'key1',
@@ -207,7 +207,7 @@ define(['d3'], function (d3) { 'use strict';
 
 
   d3sparql.tree = function (json, config = {}) {
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'root': config.root || head[0],
@@ -312,7 +312,7 @@ define(['d3'], function (d3) { 'use strict';
 
   d3sparql.htmltable = function (json, config) {
     config = config || {};
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'selector': config.selector || null
@@ -373,7 +373,7 @@ define(['d3'], function (d3) { 'use strict';
 
   d3sparql.htmlhash = function (json, config) {
     config = config || {};
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings[0];
     let opts = {
       'selector': config.selector || null
@@ -456,7 +456,7 @@ define(['d3'], function (d3) { 'use strict';
 
   d3sparql.barchart = function (json, config) {
     config = config || {};
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'label_x': config.label_x || head[0],
@@ -558,7 +558,7 @@ define(['d3'], function (d3) { 'use strict';
 
 
   d3sparql.piechart = function (json, config = {}) {
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'label': config.label || head[0],
@@ -645,7 +645,7 @@ define(['d3'], function (d3) { 'use strict';
 
 
   d3sparql.scatterplot = function (json, config = {}) {
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'label_x': config.label_x || head[0] || 'x',
@@ -1702,7 +1702,7 @@ define(['d3'], function (d3) { 'use strict';
 
   d3sparql.coordmap = function (json, config) {
     config = config || {};
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'let_lat': config.let_lat || head[0] || 'lat',
@@ -1769,7 +1769,7 @@ define(['d3'], function (d3) { 'use strict';
 
   d3sparql.namedmap = function (json, config) {
     config = config || {};
-    let head = json.head.lets;
+    let head = json.head.lets || [];
     let data = json.results.bindings;
     let opts = {
       'label': config.label || head[0] || 'label',
