@@ -1,4 +1,4 @@
-/* d3sparql 2020-04-26T02:43:02.007Z */
+/* d3sparql 2020-04-26T02:47:23.337Z */
 define(['d3'], function (d3) { 'use strict';
 
   d3 = d3 && Object.prototype.hasOwnProperty.call(d3, 'default') ? d3['default'] : d3;
@@ -314,8 +314,11 @@ define(['d3'], function (d3) { 'use strict';
     let data = json.results.bindings;
     let opts = {
       columns: config.columns || head,
-      selector: config.selector || null
+      selector: config.selector || null,
+      limit: config.limit || data.length,
+      offset: config.offset !== undefined ? config.offset : 0
     };
+    data = data.slice(opts.offset, opts.limit);
     let table = d3sparql.select(opts.selector, 'htmltable').append('table').attr('class', 'table table-bordered');
     debug("Table");
     debug(table);

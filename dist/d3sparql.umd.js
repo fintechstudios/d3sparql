@@ -1,4 +1,4 @@
-/* d3sparql 2020-04-26T02:43:02.767Z */
+/* d3sparql 2020-04-26T02:47:24.080Z */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('d3')) :
   typeof define === 'function' && define.amd ? define(['d3'], factory) :
@@ -318,8 +318,11 @@
     let data = json.results.bindings;
     let opts = {
       columns: config.columns || head,
-      selector: config.selector || null
+      selector: config.selector || null,
+      limit: config.limit || data.length,
+      offset: config.offset !== undefined ? config.offset : 0
     };
+    data = data.slice(opts.offset, opts.limit);
     let table = d3sparql.select(opts.selector, 'htmltable').append('table').attr('class', 'table table-bordered');
     debug("Table");
     debug(table);

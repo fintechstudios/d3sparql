@@ -289,8 +289,12 @@ d3sparql.htmltable = function (json, config = {}) {
 
   let opts = {
     columns: config.columns || head,
-    selector: config.selector || null
+    selector: config.selector || null,
+    limit: config.limit || data.length,
+    offset: config.offset !== undefined ? config.offset : 0,
   };
+
+  data = data.slice(opts.offset, opts.limit);
 
   let table = d3sparql.select(opts.selector, 'htmltable').append('table').attr('class', 'table table-bordered');
   debug("Table");
