@@ -1,4 +1,4 @@
-/* d3sparql 2020-04-26T01:04:29.427Z */
+/* d3sparql 2020-04-26T02:12:07.270Z */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('d3')) :
   typeof define === 'function' && define.amd ? define(['d3'], factory) :
@@ -9,7 +9,7 @@
 
   //
   const d3sparql = {
-    version: "d3sparql.js version 2018-05-04",
+    version: 'd3sparql.js version 2018-05-04',
     debug: false // set to true for showing debug information
 
   };
@@ -62,7 +62,7 @@
       console.log(url);
     }
 
-    let mime = "application/sparql-results+json";
+    let mime = 'application/sparql-results+json';
     d3.xhr(url, mime, function (request) {
       let json = request.responseText;
 
@@ -83,7 +83,7 @@
   };
 
   d3sparql.query = function (endpoint, sparql, callback) {
-    let url = endpoint + "?query=" + encodeURIComponent(sparql);
+    let url = endpoint + '?query=' + encodeURIComponent(sparql);
 
     if (d3sparql.debug) {
       console.log(endpoint);
@@ -124,16 +124,16 @@
     let head = json.head.lets;
     let data = json.results.bindings;
     let opts = {
-      "key1": config.key1 || head[0] || "key1",
-      "key2": config.key2 || head[1] || "key2",
-      "label1": config.label1 || head[2] || false,
-      "label2": config.label2 || head[3] || false,
-      "value1": config.value1 || head[4] || false,
-      "value2": config.value2 || head[5] || false
+      'key1': config.key1 || head[0] || 'key1',
+      'key2': config.key2 || head[1] || 'key2',
+      'label1': config.label1 || head[2] || false,
+      'label2': config.label2 || head[3] || false,
+      'value1': config.value1 || head[4] || false,
+      'value2': config.value2 || head[5] || false
     };
     let graph = {
-      "nodes": [],
-      "links": []
+      'nodes': [],
+      'links': []
     };
     let check = d3.map();
     let index = 0;
@@ -148,9 +148,9 @@
 
       if (!check.has(key1)) {
         graph.nodes.push({
-          "key": key1,
-          "label": label1,
-          "value": value1
+          'key': key1,
+          'label': label1,
+          'value': value1
         });
         check.set(key1, index);
         index++;
@@ -158,17 +158,17 @@
 
       if (!check.has(key2)) {
         graph.nodes.push({
-          "key": key2,
-          "label": label2,
-          "value": value2
+          'key': key2,
+          'label': label2,
+          'value': value2
         });
         check.set(key2, index);
         index++;
       }
 
       graph.links.push({
-        "source": check.get(key1),
-        "target": check.get(key2)
+        'source': check.get(key1),
+        'target': check.get(key2)
       });
     }
 
@@ -214,23 +214,26 @@
     let head = json.head.lets;
     let data = json.results.bindings;
     let opts = {
-      "root": config.root || head[0],
-      "parent": config.parent || head[1],
-      "child": config.child || head[2],
-      "value": config.value || head[3] || "value"
+      'root': config.root || head[0],
+      'parent': config.parent || head[1],
+      'child': config.child || head[2],
+      'value': config.value || head[3] || 'value'
     };
     let pair = d3.map();
     let size = d3.map();
     let root = data[0][opts.root].value;
     let parent = true;
-    let child = true;
-    let children = true;
+    let child = parent;
 
     for (let i = 0; i < data.length; i++) {
-      parent = data[i][opts.parent].value;
-      child = data[i][opts.child].value;
+      const datum = data[i];
+      parent = datum[opts.parent].value;
+      child = datum[opts.child].value;
 
       if (parent !== child) {
+        /** @type {Array} */
+        let children;
+
         if (pair.has(parent)) {
           children = pair.get(parent);
           children.push(child);
@@ -240,8 +243,8 @@
 
         pair.set(parent, children);
 
-        if (data[i][opts.value]) {
-          size.set(child, data[i][opts.value].value);
+        if (datum[opts.value]) {
+          size.set(child, datum[opts.value].value);
         }
       }
     }
@@ -260,14 +263,14 @@
 
         let total = d3.sum([subtotal, size.get(node)]);
         return {
-          "name": node,
-          "children": children,
-          "value": total
+          'name': node,
+          'children': children,
+          'value': total
         };
       } else {
         return {
-          "name": node,
-          "value": size.get(node) || 1
+          'name': node,
+          'value': size.get(node) || 1
         };
       }
     }
@@ -316,29 +319,29 @@
     let head = json.head.lets;
     let data = json.results.bindings;
     let opts = {
-      "selector": config.selector || null
+      'selector': config.selector || null
     };
-    let table = d3sparql.select(opts.selector, "htmltable").append("table").attr("class", "table table-bordered");
-    let thead = table.append("thead");
-    let tbody = table.append("tbody");
-    thead.append("tr").selectAll("th").data(head).enter().append("th").text(function (col) {
+    let table = d3sparql.select(opts.selector, 'htmltable').append('table').attr('class', 'table table-bordered');
+    let thead = table.append('thead');
+    let tbody = table.append('tbody');
+    thead.append('tr').selectAll('th').data(head).enter().append('th').text(function (col) {
       return col;
     });
-    let rows = tbody.selectAll("tr").data(data).enter().append("tr");
-    let cells = rows.selectAll("td").data(function (row) {
+    let rows = tbody.selectAll('tr').data(data).enter().append('tr');
+    let cells = rows.selectAll('td').data(function (row) {
       return head.map(function (col) {
-        return row[col] ? row[col].value : "";
+        return row[col] ? row[col].value : '';
       });
-    }).enter().append("td").text(function (val) {
+    }).enter().append('td').text(function (val) {
       return val;
     }); // default CSS
 
     table.style({
-      "margin": "10px"
+      'margin': '10px'
     });
-    table.selectAll("th").style({
-      "background": "#eeeeee",
-      "text-transform": "capitalize"
+    table.selectAll('th').style({
+      'background': '#eeeeee',
+      'text-transform': 'capitalize'
     });
   };
   /*
@@ -377,31 +380,31 @@
     let head = json.head.lets;
     let data = json.results.bindings[0];
     let opts = {
-      "selector": config.selector || null
+      'selector': config.selector || null
     };
-    let table = d3sparql.select(opts.selector, "htmlhash").append("table").attr("class", "table table-bordered");
-    let tbody = table.append("tbody");
-    let row = tbody.selectAll("tr").data(function () {
+    let table = d3sparql.select(opts.selector, 'htmlhash').append('table').attr('class', 'table table-bordered');
+    let tbody = table.append('tbody');
+    let row = tbody.selectAll('tr').data(function () {
       return head.map(function (col) {
         return {
-          "head": col,
-          "data": data[col] ? data[col].value : ""
+          'head': col,
+          'data': data[col] ? data[col].value : ''
         };
       });
-    }).enter().append("tr");
-    row.append("th").text(function (d) {
+    }).enter().append('tr');
+    row.append('th').text(function (d) {
       return d.head;
     });
-    row.append("td").text(function (d) {
+    row.append('td').text(function (d) {
       return d.data;
     }); // default CSS
 
     table.style({
-      "margin": "10px"
+      'margin': '10px'
     });
-    table.selectAll("th").style({
-      "background": "#eeeeee",
-      "text-transform": "capitalize"
+    table.selectAll('th').style({
+      'background': '#eeeeee',
+      'text-transform': 'capitalize'
     });
   };
   /*
@@ -460,20 +463,20 @@
     let head = json.head.lets;
     let data = json.results.bindings;
     let opts = {
-      "label_x": config.label_x || head[0],
-      "label_y": config.label_y || head[1],
-      "let_x": config.let_x || head[0],
-      "let_y": config.let_y || head[1],
-      "width": config.width || 750,
-      "height": config.height || 300,
-      "margin": config.margin || 80,
+      'label_x': config.label_x || head[0],
+      'label_y': config.label_y || head[1],
+      'let_x': config.let_x || head[0],
+      'let_y': config.let_y || head[1],
+      'width': config.width || 750,
+      'height': config.height || 300,
+      'margin': config.margin || 80,
       // TODO: to make use of {top: 10, right: 10, bottom: 80, left: 80}
-      "selector": config.selector || null
+      'selector': config.selector || null
     };
     let scale_x = d3.scale.ordinal().rangeRoundBands([0, opts.width - opts.margin], 0.1);
     let scale_y = d3.scale.linear().range([opts.height - opts.margin, 0]);
-    let axis_x = d3.svg.axis().scale(scale_x).orient("bottom");
-    let axis_y = d3.svg.axis().scale(scale_y).orient("left"); // .ticks(10, "%")
+    let axis_x = d3.svg.axis().scale(scale_x).orient('bottom');
+    let axis_y = d3.svg.axis().scale(scale_y).orient('left'); // .ticks(10, "%")
 
     scale_x.domain(data.map(function (d) {
       return d[opts.let_x].value;
@@ -481,16 +484,16 @@
     scale_y.domain(d3.extent(data, function (d) {
       return parseInt(d[opts.let_y].value);
     }));
-    let svg = d3sparql.select(opts.selector, "barchart").append("svg").attr("width", opts.width).attr("height", opts.height); //    .append("g")
+    let svg = d3sparql.select(opts.selector, 'barchart').append('svg').attr('width', opts.width).attr('height', opts.height); //    .append("g")
     //    .attr("transform", "translate(" + opts.margin + "," + 0 + ")")
 
-    let ax = svg.append("g").attr("class", "axis x").attr("transform", "translate(" + opts.margin + "," + (opts.height - opts.margin) + ")").call(axis_x);
-    let ay = svg.append("g").attr("class", "axis y").attr("transform", "translate(" + opts.margin + ",0)").call(axis_y);
-    let bar = svg.selectAll(".bar").data(data).enter().append("rect").attr("transform", "translate(" + opts.margin + "," + 0 + ")").attr("class", "bar").attr("x", function (d) {
+    let ax = svg.append('g').attr('class', 'axis x').attr('transform', 'translate(' + opts.margin + ',' + (opts.height - opts.margin) + ')').call(axis_x);
+    let ay = svg.append('g').attr('class', 'axis y').attr('transform', 'translate(' + opts.margin + ',0)').call(axis_y);
+    let bar = svg.selectAll('.bar').data(data).enter().append('rect').attr('transform', 'translate(' + opts.margin + ',' + 0 + ')').attr('class', 'bar').attr('x', function (d) {
       return scale_x(d[opts.let_x].value);
-    }).attr("width", scale_x.rangeBand()).attr("y", function (d) {
+    }).attr('width', scale_x.rangeBand()).attr('y', function (d) {
       return scale_y(d[opts.let_y].value);
-    }).attr("height", function (d) {
+    }).attr('height', function (d) {
       return opts.height - scale_y(parseInt(d[opts.let_y].value)) - opts.margin;
     });
     /*
@@ -501,23 +504,23 @@
         })
     */
 
-    ax.selectAll("text").attr("dy", ".35em").attr("x", 10).attr("y", 0).attr("transform", "rotate(90)").style("text-anchor", "start");
-    ax.append("text").attr("class", "label").text(opts.label_x).style("text-anchor", "middle").attr("transform", "translate(" + (opts.width - opts.margin) / 2 + "," + (opts.margin - 5) + ")");
-    ay.append("text").attr("class", "label").text(opts.label_y).style("text-anchor", "middle").attr("transform", "rotate(-90)").attr("x", 0 - opts.height / 2).attr("y", 0 - (opts.margin - 20)); // default CSS/SVG
+    ax.selectAll('text').attr('dy', '.35em').attr('x', 10).attr('y', 0).attr('transform', 'rotate(90)').style('text-anchor', 'start');
+    ax.append('text').attr('class', 'label').text(opts.label_x).style('text-anchor', 'middle').attr('transform', 'translate(' + (opts.width - opts.margin) / 2 + ',' + (opts.margin - 5) + ')');
+    ay.append('text').attr('class', 'label').text(opts.label_y).style('text-anchor', 'middle').attr('transform', 'rotate(-90)').attr('x', 0 - opts.height / 2).attr('y', 0 - (opts.margin - 20)); // default CSS/SVG
 
     bar.attr({
-      "fill": "steelblue"
+      'fill': 'steelblue'
     });
-    svg.selectAll(".axis").attr({
-      "stroke": "black",
-      "fill": "none",
-      "shape-rendering": "crispEdges"
+    svg.selectAll('.axis').attr({
+      'stroke': 'black',
+      'fill': 'none',
+      'shape-rendering': 'crispEdges'
     });
-    svg.selectAll("text").attr({
-      "stroke": "none",
-      "fill": "black",
-      "font-size": "8pt",
-      "font-family": "sans-serif"
+    svg.selectAll('text').attr({
+      'stroke': 'none',
+      'fill': 'black',
+      'font-size': '8pt',
+      'font-family': 'sans-serif'
     });
   };
   /*
@@ -562,13 +565,13 @@
     let head = json.head.lets;
     let data = json.results.bindings;
     let opts = {
-      "label": config.label || head[0],
-      "size": config.size || head[1],
-      "width": config.width || 700,
-      "height": config.height || 700,
-      "margin": config.margin || 10,
-      "hole": config.hole || 100,
-      "selector": config.selector || null
+      'label': config.label || head[0],
+      'size': config.size || head[1],
+      'width': config.width || 700,
+      'height': config.height || 700,
+      'margin': config.margin || 10,
+      'hole': config.hole || 100,
+      'selector': config.selector || null
     };
     let radius = Math.min(opts.width, opts.height) / 2 - opts.margin;
     let hole = Math.max(Math.min(radius - 50, opts.hole), 0);
@@ -578,26 +581,26 @@
     .value(function (d) {
       return d[opts.size].value;
     });
-    let svg = d3sparql.select(opts.selector, "piechart").append("svg").attr("width", opts.width).attr("height", opts.height).append("g").attr("transform", "translate(" + opts.width / 2 + "," + opts.height / 2 + ")");
-    let g = svg.selectAll(".arc").data(pie(data)).enter().append("g").attr("class", "arc");
-    let slice = g.append("path").attr("d", arc).attr("fill", function (d, i) {
+    let svg = d3sparql.select(opts.selector, 'piechart').append('svg').attr('width', opts.width).attr('height', opts.height).append('g').attr('transform', 'translate(' + opts.width / 2 + ',' + opts.height / 2 + ')');
+    let g = svg.selectAll('.arc').data(pie(data)).enter().append('g').attr('class', 'arc');
+    let slice = g.append('path').attr('d', arc).attr('fill', function (d, i) {
       return color(i);
     });
-    let text = g.append("text").attr("class", "label").attr("transform", function (d) {
-      return "translate(" + arc.centroid(d) + ")";
-    }).attr("dy", ".35em").attr("text-anchor", "middle").text(function (d) {
+    let text = g.append('text').attr('class', 'label').attr('transform', function (d) {
+      return 'translate(' + arc.centroid(d) + ')';
+    }).attr('dy', '.35em').attr('text-anchor', 'middle').text(function (d) {
       return d.data[opts.label].value;
     }); // default CSS/SVG
 
     slice.attr({
-      "stroke": "#ffffff"
+      'stroke': '#ffffff'
     }); // TODO: not working?
 
-    svg.selectAll("text").attr({
-      "stroke": "none",
-      "fill": "black",
-      "font-size": "20px",
-      "font-family": "sans-serif"
+    svg.selectAll('text').attr({
+      'stroke': 'none',
+      'fill': 'black',
+      'font-size': '20px',
+      'font-family': 'sans-serif'
     });
   };
   /*
@@ -649,19 +652,19 @@
     let head = json.head.lets;
     let data = json.results.bindings;
     let opts = {
-      "label_x": config.label_x || head[0] || "x",
-      "label_y": config.label_y || head[1] || "y",
-      "label_r": config.label_r || head[2] || "r",
-      "let_x": config.let_x || head[0],
-      "let_y": config.let_y || head[1],
-      "let_r": config.let_r || head[2] || 5,
-      "min_r": config.min_r || 1,
-      "max_r": config.max_r || 20,
-      "width": config.width || 850,
-      "height": config.height || 300,
-      "margin_x": config.margin_x || 80,
-      "margin_y": config.margin_y || 40,
-      "selector": config.selector || null
+      'label_x': config.label_x || head[0] || 'x',
+      'label_y': config.label_y || head[1] || 'y',
+      'label_r': config.label_r || head[2] || 'r',
+      'let_x': config.let_x || head[0],
+      'let_y': config.let_y || head[1],
+      'let_r': config.let_r || head[2] || 5,
+      'min_r': config.min_r || 1,
+      'max_r': config.max_r || 20,
+      'width': config.width || 850,
+      'height': config.height || 300,
+      'margin_x': config.margin_x || 80,
+      'margin_y': config.margin_y || 40,
+      'selector': config.selector || null
     };
     let extent_x = d3.extent(data, function (d) {
       return parseInt(d[opts.let_x].value);
@@ -676,43 +679,43 @@
     let scale_y = d3.scale.linear().range([opts.height - opts.margin_y, opts.margin_y]).domain(extent_y);
     let scale_r = d3.scale.linear().range([opts.min_r, opts.max_r]).domain(extent_r);
     let axis_x = d3.svg.axis().scale(scale_x);
-    let axis_y = d3.svg.axis().scale(scale_y).orient("left");
-    let svg = d3sparql.select(opts.selector, "scatterplot").append("svg").attr("width", opts.width).attr("height", opts.height);
-    let circle = svg.selectAll("circle").data(data).enter().append("circle").attr("class", "node").attr("cx", function (d) {
+    let axis_y = d3.svg.axis().scale(scale_y).orient('left');
+    let svg = d3sparql.select(opts.selector, 'scatterplot').append('svg').attr('width', opts.width).attr('height', opts.height);
+    let circle = svg.selectAll('circle').data(data).enter().append('circle').attr('class', 'node').attr('cx', function (d) {
       return scale_x(d[opts.let_x].value);
-    }).attr("cy", function (d) {
+    }).attr('cy', function (d) {
       return scale_y(d[opts.let_y].value);
-    }).attr("r", function (d) {
+    }).attr('r', function (d) {
       return scale_r(d[opts.let_r] ? d[opts.let_r].value : opts.let_r);
-    }).attr("opacity", 0.5).append("title").text(function (d) {
+    }).attr('opacity', 0.5).append('title').text(function (d) {
       return d[opts.label_r] ? d[opts.label_r].value : opts.label_r;
     });
-    let ax = svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + (opts.height - opts.margin_y) + ")").call(axis_x);
-    let ay = svg.append("g").attr("class", "y axis").attr("transform", "translate(" + opts.margin_x + ",0)").call(axis_y);
-    ax.append("text").attr("class", "label").text(opts.label_x).style("text-anchor", "middle").attr("transform", "translate(" + (opts.width - opts.margin_x) / 2 + "," + (opts.margin_y - 5) + ")");
-    ay.append("text").attr("class", "label").text(opts.label_y).style("text-anchor", "middle").attr("transform", "rotate(-90)").attr("x", 0 - opts.height / 2).attr("y", 0 - (opts.margin_x - 20)); // default CSS/SVG
+    let ax = svg.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + (opts.height - opts.margin_y) + ')').call(axis_x);
+    let ay = svg.append('g').attr('class', 'y axis').attr('transform', 'translate(' + opts.margin_x + ',0)').call(axis_y);
+    ax.append('text').attr('class', 'label').text(opts.label_x).style('text-anchor', 'middle').attr('transform', 'translate(' + (opts.width - opts.margin_x) / 2 + ',' + (opts.margin_y - 5) + ')');
+    ay.append('text').attr('class', 'label').text(opts.label_y).style('text-anchor', 'middle').attr('transform', 'rotate(-90)').attr('x', 0 - opts.height / 2).attr('y', 0 - (opts.margin_x - 20)); // default CSS/SVG
 
     ax.attr({
-      "stroke": "black",
-      "fill": "none"
+      'stroke': 'black',
+      'fill': 'none'
     });
     ay.attr({
-      "stroke": "black",
-      "fill": "none"
+      'stroke': 'black',
+      'fill': 'none'
     }); // This doesn't work with .append("circle") with .append("title") for tooltip
 
     circle.attr({
-      "stroke": "gray",
-      "stroke-width": "1px",
-      "fill": "lightblue",
-      "opacity": 0.5
+      'stroke': 'gray',
+      'stroke-width': '1px',
+      'fill': 'lightblue',
+      'opacity': 0.5
     }); //svg.selectAll(".label").attr({
 
-    svg.selectAll("text").attr({
-      "stroke": "none",
-      "fill": "black",
-      "font-size": "8pt",
-      "font-family": "sans-serif"
+    svg.selectAll('text').attr({
+      'stroke': 'none',
+      'fill': 'black',
+      'font-size': '8pt',
+      'font-family': 'sans-serif'
     });
   };
   /*
@@ -772,59 +775,59 @@
       return parseFloat(d.value);
     })).range([1, 20]);
     let opts = {
-      "radius": config.radius || function (d) {
+      'radius': config.radius || function (d) {
         return d.value ? scale(d.value) : 1 + d.label.length;
       },
-      "charge": config.charge || -500,
-      "distance": config.distance || 50,
-      "width": config.width || 1000,
-      "height": config.height || 750,
-      "label": config.label || false,
-      "selector": config.selector || null
+      'charge': config.charge || -500,
+      'distance': config.distance || 50,
+      'width': config.width || 1000,
+      'height': config.height || 750,
+      'label': config.label || false,
+      'selector': config.selector || null
     };
-    let svg = d3sparql.select(opts.selector, "forcegraph").append("svg").attr("width", opts.width).attr("height", opts.height);
-    let link = svg.selectAll(".link").data(graph.links).enter().append("line").attr("class", "link");
-    let node = svg.selectAll(".node").data(graph.nodes).enter().append("g");
-    let circle = node.append("circle").attr("class", "node").attr("r", opts.radius);
-    let text = node.append("text").text(function (d) {
-      return d[opts.label || "label"];
-    }).attr("class", "node");
+    let svg = d3sparql.select(opts.selector, 'forcegraph').append('svg').attr('width', opts.width).attr('height', opts.height);
+    let link = svg.selectAll('.link').data(graph.links).enter().append('line').attr('class', 'link');
+    let node = svg.selectAll('.node').data(graph.nodes).enter().append('g');
+    let circle = node.append('circle').attr('class', 'node').attr('r', opts.radius);
+    let text = node.append('text').text(function (d) {
+      return d[opts.label || 'label'];
+    }).attr('class', 'node');
     let force = d3.layout.force().charge(opts.charge).linkDistance(opts.distance).size([opts.width, opts.height]).nodes(graph.nodes).links(graph.links).start();
-    force.on("tick", function () {
-      link.attr("x1", function (d) {
+    force.on('tick', function () {
+      link.attr('x1', function (d) {
         return d.source.x;
-      }).attr("y1", function (d) {
+      }).attr('y1', function (d) {
         return d.source.y;
-      }).attr("x2", function (d) {
+      }).attr('x2', function (d) {
         return d.target.x;
-      }).attr("y2", function (d) {
+      }).attr('y2', function (d) {
         return d.target.y;
       });
-      text.attr("x", function (d) {
+      text.attr('x', function (d) {
         return d.x;
-      }).attr("y", function (d) {
+      }).attr('y', function (d) {
         return d.y;
       });
-      circle.attr("cx", function (d) {
+      circle.attr('cx', function (d) {
         return d.x;
-      }).attr("cy", function (d) {
+      }).attr('cy', function (d) {
         return d.y;
       });
     });
     node.call(force.drag); // default CSS/SVG
 
     link.attr({
-      "stroke": "#999999"
+      'stroke': '#999999'
     });
     circle.attr({
-      "stroke": "black",
-      "stroke-width": "1px",
-      "fill": "lightblue",
-      "opacity": 1
+      'stroke': 'black',
+      'stroke-width': '1px',
+      'fill': 'lightblue',
+      'opacity': 1
     });
     text.attr({
-      "font-size": "8px",
-      "font-family": "sans-serif"
+      'font-size': '8px',
+      'font-family': 'sans-serif'
     });
   };
   /*
@@ -883,10 +886,10 @@
     config = config || {};
     let graph = json.head && json.results ? d3sparql.graph(json, config) : json;
     let opts = {
-      "width": config.width || 750,
-      "height": config.height || 1200,
-      "margin": config.margin || 10,
-      "selector": config.selector || null
+      'width': config.width || 750,
+      'height': config.height || 1200,
+      'margin': config.margin || 10,
+      'selector': config.selector || null
     };
     let nodes = graph.nodes;
     let links = graph.links;
@@ -898,44 +901,44 @@
     let sankey = d3.sankey().size([opts.width, opts.height]).nodeWidth(15).nodePadding(10).nodes(nodes).links(links).layout(32);
     let path = sankey.link();
     let color = d3.scale.category20();
-    let svg = d3sparql.select(opts.selector, "sankey").append("svg").attr("width", opts.width + opts.margin * 2).attr("height", opts.height + opts.margin * 2).append("g").attr("transform", "translate(" + opts.margin + "," + opts.margin + ")");
-    let link = svg.selectAll(".link").data(links).enter().append("path").attr("class", "link").attr("d", path).attr("stroke-width", function (d) {
+    let svg = d3sparql.select(opts.selector, 'sankey').append('svg').attr('width', opts.width + opts.margin * 2).attr('height', opts.height + opts.margin * 2).append('g').attr('transform', 'translate(' + opts.margin + ',' + opts.margin + ')');
+    let link = svg.selectAll('.link').data(links).enter().append('path').attr('class', 'link').attr('d', path).attr('stroke-width', function (d) {
       return Math.max(1, d.dy);
     }).sort(function (a, b) {
       return b.dy - a.dy;
     });
-    let node = svg.selectAll(".node").data(nodes).enter().append("g").attr("class", "node").attr("transform", function (d) {
-      return "translate(" + d.x + "," + d.y + ")";
+    let node = svg.selectAll('.node').data(nodes).enter().append('g').attr('class', 'node').attr('transform', function (d) {
+      return 'translate(' + d.x + ',' + d.y + ')';
     }).call(d3.behavior.drag().origin(function (d) {
       return d;
-    }).on("dragstart", function () {
+    }).on('dragstart', function () {
       this.parentNode.appendChild(this);
-    }).on("drag", dragmove));
-    node.append("rect").attr("width", function (d) {
+    }).on('drag', dragmove));
+    node.append('rect').attr('width', function (d) {
       return d.dx;
-    }).attr("height", function (d) {
+    }).attr('height', function (d) {
       return d.dy;
-    }).attr("fill", function (d) {
+    }).attr('fill', function (d) {
       return color(d.label);
-    }).attr("opacity", 0.5);
-    node.append("text").attr("x", -6).attr("y", function (d) {
+    }).attr('opacity', 0.5);
+    node.append('text').attr('x', -6).attr('y', function (d) {
       return d.dy / 2;
-    }).attr("dy", ".35em").attr("text-anchor", "end").attr("transform", null).text(function (d) {
+    }).attr('dy', '.35em').attr('text-anchor', 'end').attr('transform', null).text(function (d) {
       return d.label;
     }).filter(function (d) {
       return d.x < opts.width / 2;
-    }).attr("x", 6 + sankey.nodeWidth()).attr("text-anchor", "start"); // default CSS/SVG
+    }).attr('x', 6 + sankey.nodeWidth()).attr('text-anchor', 'start'); // default CSS/SVG
 
     link.attr({
-      "fill": "none",
-      "stroke": "grey",
-      "opacity": 0.5
+      'fill': 'none',
+      'stroke': 'grey',
+      'opacity': 0.5
     });
 
     function dragmove(d) {
-      d3.select(this).attr("transform", "translate(" + d.x + "," + (d.y = Math.max(0, Math.min(opts.height - d.dy, d3.event.y))) + ")");
+      d3.select(this).attr('transform', 'translate(' + d.x + ',' + (d.y = Math.max(0, Math.min(opts.height - d.dy, d3.event.y))) + ')');
       sankey.relayout();
-      link.attr("d", path);
+      link.attr('d', path);
     }
   };
   /*
@@ -987,11 +990,11 @@
     config = config || {};
     let tree = json.head && json.results ? d3sparql.tree(json, config) : json;
     let opts = {
-      "diameter": config.diameter || 800,
-      "angle": config.angle || 360,
-      "depth": config.depth || 200,
-      "radius": config.radius || 5,
-      "selector": config.selector || null
+      'diameter': config.diameter || 800,
+      'angle': config.angle || 360,
+      'depth': config.depth || 200,
+      'radius': config.radius || 5,
+      'selector': config.selector || null
     };
     let tree_layout = d3.layout.tree().size([opts.angle, opts.depth]).separation(function (a, b) {
       return (a.parent === b.parent ? 1 : 2) / a.depth;
@@ -1001,34 +1004,34 @@
     let diagonal = d3.svg.diagonal.radial().projection(function (d) {
       return [d.y, d.x / 180 * Math.PI];
     });
-    let svg = d3sparql.select(opts.selector, "roundtree").append("svg").attr("width", opts.diameter).attr("height", opts.diameter).append("g").attr("transform", "translate(" + opts.diameter / 2 + "," + opts.diameter / 2 + ")");
-    let link = svg.selectAll(".link").data(links).enter().append("path").attr("class", "link").attr("d", diagonal);
-    let node = svg.selectAll(".node").data(nodes).enter().append("g").attr("class", "node").attr("transform", function (d) {
-      return "rotate(" + (d.x - 90) + ") translate(" + d.y + ")";
+    let svg = d3sparql.select(opts.selector, 'roundtree').append('svg').attr('width', opts.diameter).attr('height', opts.diameter).append('g').attr('transform', 'translate(' + opts.diameter / 2 + ',' + opts.diameter / 2 + ')');
+    let link = svg.selectAll('.link').data(links).enter().append('path').attr('class', 'link').attr('d', diagonal);
+    let node = svg.selectAll('.node').data(nodes).enter().append('g').attr('class', 'node').attr('transform', function (d) {
+      return 'rotate(' + (d.x - 90) + ') translate(' + d.y + ')';
     });
-    let circle = node.append("circle").attr("r", opts.radius);
-    let text = node.append("text").attr("dy", ".35em").attr("text-anchor", function (d) {
-      return d.x < 180 ? "start" : "end";
-    }).attr("transform", function (d) {
-      return d.x < 180 ? "translate(8)" : "rotate(180) translate(-8)";
+    let circle = node.append('circle').attr('r', opts.radius);
+    let text = node.append('text').attr('dy', '.35em').attr('text-anchor', function (d) {
+      return d.x < 180 ? 'start' : 'end';
+    }).attr('transform', function (d) {
+      return d.x < 180 ? 'translate(8)' : 'rotate(180) translate(-8)';
     }).text(function (d) {
       return d.name;
     }); // default CSS/SVG
 
     link.attr({
-      "fill": "none",
-      "stroke": "#cccccc",
-      "stroke-width": "1.5px"
+      'fill': 'none',
+      'stroke': '#cccccc',
+      'stroke-width': '1.5px'
     });
     circle.attr({
-      "fill": "#ffffff",
-      "stroke": "steelblue",
-      "stroke-width": "1.5px",
-      "opacity": 1
+      'fill': '#ffffff',
+      'stroke': 'steelblue',
+      'stroke-width': '1.5px',
+      'opacity': 1
     });
     text.attr({
-      "font-size": "10px",
-      "font-family": "sans-serif"
+      'font-size': '10px',
+      'font-family': 'sans-serif'
     });
   };
   /*
@@ -1080,46 +1083,46 @@
     config = config || {};
     let tree = json.head && json.results ? d3sparql.tree(json, config) : json;
     let opts = {
-      "width": config.width || 800,
-      "height": config.height || 2000,
-      "margin": config.margin || 350,
-      "radius": config.radius || 5,
-      "selector": config.selector || null
+      'width': config.width || 800,
+      'height': config.height || 2000,
+      'margin': config.margin || 350,
+      'radius': config.radius || 5,
+      'selector': config.selector || null
     };
     let cluster = d3.layout.cluster().size([opts.height, opts.width - opts.margin]);
     let diagonal = d3.svg.diagonal().projection(function (d) {
       return [d.y, d.x];
     });
-    let svg = d3sparql.select(opts.selector, "dendrogram").append("svg").attr("width", opts.width).attr("height", opts.height).append("g").attr("transform", "translate(40,0)");
+    let svg = d3sparql.select(opts.selector, 'dendrogram').append('svg').attr('width', opts.width).attr('height', opts.height).append('g').attr('transform', 'translate(40,0)');
     let nodes = cluster.nodes(tree);
     let links = cluster.links(nodes);
-    let link = svg.selectAll(".link").data(links).enter().append("path").attr("class", "link").attr("d", diagonal);
-    let node = svg.selectAll(".node").data(nodes).enter().append("g").attr("class", "node").attr("transform", function (d) {
-      return "translate(" + d.y + "," + d.x + ")";
+    let link = svg.selectAll('.link').data(links).enter().append('path').attr('class', 'link').attr('d', diagonal);
+    let node = svg.selectAll('.node').data(nodes).enter().append('g').attr('class', 'node').attr('transform', function (d) {
+      return 'translate(' + d.y + ',' + d.x + ')';
     });
-    let circle = node.append("circle").attr("r", opts.radius);
-    let text = node.append("text").attr("dx", function (d) {
+    let circle = node.append('circle').attr('r', opts.radius);
+    let text = node.append('text').attr('dx', function (d) {
       return d.parent && d.children ? -8 : 8;
-    }).attr("dy", 5).style("text-anchor", function (d) {
-      return d.parent && d.children ? "end" : "start";
+    }).attr('dy', 5).style('text-anchor', function (d) {
+      return d.parent && d.children ? 'end' : 'start';
     }).text(function (d) {
       return d.name;
     }); // default CSS/SVG
 
     link.attr({
-      "fill": "none",
-      "stroke": "#cccccc",
-      "stroke-width": "1.5px"
+      'fill': 'none',
+      'stroke': '#cccccc',
+      'stroke-width': '1.5px'
     });
     circle.attr({
-      "fill": "#ffffff",
-      "stroke": "steelblue",
-      "stroke-width": "1.5px",
-      "opacity": 1
+      'fill': '#ffffff',
+      'stroke': 'steelblue',
+      'stroke-width': '1.5px',
+      'opacity': 1
     });
     text.attr({
-      "font-size": "10px",
-      "font-family": "sans-serif"
+      'font-size': '10px',
+      'font-family': 'sans-serif'
     });
   };
   /*
@@ -1163,16 +1166,16 @@
   d3sparql.sunburst = function (json, config = {}) {
     let tree = json.head && json.results ? d3sparql.tree(json, config) : json;
     let opts = {
-      "width": config.width || 1000,
-      "height": config.height || 900,
-      "margin": config.margin || 150,
-      "selector": config.selector || null
+      'width': config.width || 1000,
+      'height': config.height || 900,
+      'margin': config.margin || 150,
+      'selector': config.selector || null
     };
     let radius = Math.min(opts.width, opts.height) / 2 - opts.margin;
     let x = d3.scale.linear().range([0, 2 * Math.PI]);
     let y = d3.scale.sqrt().range([0, radius]);
     let color = d3.scale.category20();
-    let svg = d3sparql.select(opts.selector, "sunburst").append("svg").attr("width", opts.width).attr("height", opts.height).append("g").attr("transform", "translate(" + opts.width / 2 + "," + opts.height / 2 + ")");
+    let svg = d3sparql.select(opts.selector, 'sunburst').append('svg').attr('width', opts.width).attr('height', opts.height).append('g').attr('transform', 'translate(' + opts.width / 2 + ',' + opts.height / 2 + ')');
     let arc = d3.svg.arc().startAngle(function (d) {
       return Math.max(0, Math.min(2 * Math.PI, x(d.x)));
     }).endAngle(function (d) {
@@ -1186,38 +1189,38 @@
       return d.value;
     });
     let nodes = partition.nodes(tree);
-    let path = svg.selectAll("path").data(nodes).enter().append("path").attr("d", arc).attr("class", "arc").style("fill", function (d) {
+    let path = svg.selectAll('path').data(nodes).enter().append('path').attr('d', arc).attr('class', 'arc').style('fill', function (d) {
       return color((d.children ? d : d.parent).name);
-    }).on("click", click);
-    let text = svg.selectAll("text").data(nodes).enter().append("text").attr("transform", function (d) {
+    }).on('click', click);
+    let text = svg.selectAll('text').data(nodes).enter().append('text').attr('transform', function (d) {
       let rotate = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
-      return "rotate(" + rotate + ") translate(" + y(d.y) + ")";
-    }).attr("dx", ".5em").attr("dy", ".35em").text(function (d) {
+      return 'rotate(' + rotate + ') translate(' + y(d.y) + ')';
+    }).attr('dx', '.5em').attr('dy', '.35em').text(function (d) {
       return d.name;
-    }).on("click", click); // default CSS/SVG
+    }).on('click', click); // default CSS/SVG
 
     path.attr({
-      "stroke": "#ffffff",
-      "fill-rule": "evenodd"
+      'stroke': '#ffffff',
+      'fill-rule': 'evenodd'
     });
     text.attr({
-      "font-size": "10px",
-      "font-family": "sans-serif"
+      'font-size': '10px',
+      'font-family': 'sans-serif'
     });
 
     function click(d) {
-      path.transition().duration(750).attrTween("d", arcTween(d));
-      text.style("visibility", function (e) {
+      path.transition().duration(750).attrTween('d', arcTween(d));
+      text.style('visibility', function (e) {
         // required for showing labels just before the transition when zooming back to the upper level
-        return isParentOf(d, e) ? null : d3.select(this).style("visibility");
-      }).transition().duration(750).attrTween("transform", function (d) {
+        return isParentOf(d, e) ? null : d3.select(this).style('visibility');
+      }).transition().duration(750).attrTween('transform', function (d) {
         return function () {
           let rotate = x(d.x + d.dx / 2) * 180 / Math.PI - 90;
-          return "rotate(" + rotate + ") translate(" + y(d.y) + ")";
+          return 'rotate(' + rotate + ') translate(' + y(d.y) + ')';
         };
-      }).each("end", function (e) {
+      }).each('end', function (e) {
         // required for hiding labels just after the transition when zooming down to the lower level
-        d3.select(this).style("visibility", isParentOf(d, e) ? null : "hidden");
+        d3.select(this).style('visibility', isParentOf(d, e) ? null : 'hidden');
       });
     }
 
@@ -1310,10 +1313,10 @@
     config = config || {};
     let tree = json.head && json.results ? d3sparql.tree(json, config) : json;
     let opts = {
-      "width": config.width || 800,
-      "height": config.height || 800,
-      "diameter": config.diameter || 700,
-      "selector": config.selector || null
+      'width': config.width || 800,
+      'height': config.height || 800,
+      'diameter': config.diameter || 700,
+      'selector': config.selector || null
     };
     let w = opts.width,
         h = opts.height,
@@ -1325,14 +1328,14 @@
     });
     let node = tree;
     let nodes = pack.nodes(tree);
-    let vis = d3sparql.select(opts.selector, "circlepack").append("svg").attr("width", w).attr("height", h).append("g").attr("transform", "translate(" + (w - r) / 2 + "," + (h - r) / 2 + ")");
-    vis.selectAll("circle").data(nodes).enter().append("circle").attr("class", function (d) {
-      return d.children ? "parent" : "child";
-    }).attr("cx", function (d) {
+    let vis = d3sparql.select(opts.selector, 'circlepack').append('svg').attr('width', w).attr('height', h).append('g').attr('transform', 'translate(' + (w - r) / 2 + ',' + (h - r) / 2 + ')');
+    vis.selectAll('circle').data(nodes).enter().append('circle').attr('class', function (d) {
+      return d.children ? 'parent' : 'child';
+    }).attr('cx', function (d) {
       return d.x;
-    }).attr("cy", function (d) {
+    }).attr('cy', function (d) {
       return d.y;
-    }).attr("r", function (d) {
+    }).attr('r', function (d) {
       return d.r;
     })
     /*
@@ -1344,26 +1347,26 @@
         .on("mouseover", function() { d3.select(this).attr("stroke", "#ff7f0e").attr("stroke-width", ".5px") })
         .on("mouseout", function() { d3.select(this).attr("stroke", "steelblue").attr("stroke-width", ".5px") })
     */
-    .on("click", function (d) {
+    .on('click', function (d) {
       return zoom(node === d ? tree : d);
     });
-    vis.selectAll("text").data(nodes).enter().append("text").attr("class", function (d) {
-      return d.children ? "parent" : "child";
-    }).attr("x", function (d) {
+    vis.selectAll('text').data(nodes).enter().append('text').attr('class', function (d) {
+      return d.children ? 'parent' : 'child';
+    }).attr('x', function (d) {
       return d.x;
-    }).attr("y", function (d) {
+    }).attr('y', function (d) {
       return d.y;
     }) //    .attr("dy", ".35em")
-    .style("opacity", function (d) {
+    .style('opacity', function (d) {
       return d.r > 20 ? 1 : 0;
     }).text(function (d) {
       return d.name;
     }) // rotate to avoid string collision
     //.attr("text-anchor", "middle")
-    .attr("text-anchor", "start").transition().duration(1000).attr("transform", function (d) {
-      return "rotate(-30, " + d.x + ", " + d.y + ")";
+    .attr('text-anchor', 'start').transition().duration(1000).attr('transform', function (d) {
+      return 'rotate(-30, ' + d.x + ', ' + d.y + ')';
     });
-    d3.select(window).on("click", function () {
+    d3.select(window).on('click', function () {
       zoom(tree);
     });
 
@@ -1372,18 +1375,18 @@
       x.domain([d.x - d.r, d.x + d.r]);
       y.domain([d.y - d.r, d.y + d.r]);
       let t = vis.transition().duration(d3.event.altKey ? 2000 : 500);
-      t.selectAll("circle").attr("cx", function (d) {
+      t.selectAll('circle').attr('cx', function (d) {
         return x(d.x);
-      }).attr("cy", function (d) {
+      }).attr('cy', function (d) {
         return y(d.y);
-      }).attr("r", function (d) {
+      }).attr('r', function (d) {
         return k * d.r;
       });
-      t.selectAll("text").attr("x", function (d) {
+      t.selectAll('text').attr('x', function (d) {
         return x(d.x);
-      }).attr("y", function (d) {
+      }).attr('y', function (d) {
         return y(d.y);
-      }).style("opacity", function (d) {
+      }).style('opacity', function (d) {
         return k * d.r > 20 ? 1 : 0;
       });
       d3.event.stopPropagation();
@@ -1426,21 +1429,20 @@
   */
 
 
-  d3sparql.treemap = function (json, config) {
-    config = config || {};
+  d3sparql.treemap = function (json, config = {}) {
     let tree = json.head && json.results ? d3sparql.tree(json, config) : json;
     let opts = {
-      "width": config.width || 800,
-      "height": config.height || 500,
-      "count": config.count || false,
-      "color": config.color || d3.scale.category20c(),
-      "margin": config.margin || {
+      'width': config.width || 800,
+      'height': config.height || 500,
+      'count': config.count || false,
+      'color': config.color || d3.scale.category20c(),
+      'margin': config.margin || {
         top: 0,
         right: 0,
         bottom: 0,
         left: 0
       },
-      "selector": config.selector || null
+      'selector': config.selector || null
     };
     let width = opts.width - opts.margin.left - opts.margin.right;
     let height = opts.height - opts.margin.top - opts.margin.bottom;
@@ -1455,34 +1457,34 @@
     }
 
     let treemap = d3.layout.treemap().size([width, height]).sticky(true).value(opts.count ? count : size);
-    let div = d3sparql.select(opts.selector, "treemap").style("position", "relative").style("width", opts.width + "px").style("height", opts.height + "px").style("left", opts.margin.left + "px").style("top", opts.margin.top + "px");
-    let node = div.datum(tree).selectAll(".node").data(treemap.nodes).enter().append("div").attr("class", "node").call(position).style("background", function (d) {
+    let div = d3sparql.select(opts.selector, 'treemap').style('position', 'relative').style('width', opts.width + 'px').style('height', opts.height + 'px').style('left', opts.margin.left + 'px').style('top', opts.margin.top + 'px');
+    let node = div.datum(tree).selectAll('.node').data(treemap.nodes).enter().append('div').attr('class', 'node').call(position).style('background', function (d) {
       return d.children ? color(d.name) : null;
     }).text(function (d) {
       return d.children ? null : d.name;
     }); // default CSS/SVG
 
     node.style({
-      "border-style": "solid",
-      "border-width": "1px",
-      "border-color": "white",
-      "font-size": "10px",
-      "font-family": "sans-serif",
-      "line-height": "12px",
-      "overflow": "hidden",
-      "position": "absolute",
-      "text-indent": "2px"
+      'border-style': 'solid',
+      'border-width': '1px',
+      'border-color': 'white',
+      'font-size': '10px',
+      'font-family': 'sans-serif',
+      'line-height': '12px',
+      'overflow': 'hidden',
+      'position': 'absolute',
+      'text-indent': '2px'
     });
 
     function position() {
-      this.style("left", function (d) {
-        return d.x + "px";
-      }).style("top", function (d) {
-        return d.y + "px";
-      }).style("width", function (d) {
-        return Math.max(0, d.dx - 1) + "px";
-      }).style("height", function (d) {
-        return Math.max(0, d.dy - 1) + "px";
+      this.style('left', function (d) {
+        return d.x + 'px';
+      }).style('top', function (d) {
+        return d.y + 'px';
+      }).style('width', function (d) {
+        return Math.max(0, d.dx - 1) + 'px';
+      }).style('height', function (d) {
+        return Math.max(0, d.dy - 1) + 'px';
       });
     }
   };
@@ -1529,17 +1531,17 @@
     config = config || {};
     let tree = json.head && json.results ? d3sparql.tree(json, config) : json;
     let opts = {
-      "width": config.width || 800,
-      "height": config.height || 500,
-      "margin": config.margin || {
+      'width': config.width || 800,
+      'height': config.height || 500,
+      'margin': config.margin || {
         top: 25,
         right: 0,
         bottom: 0,
         left: 0
       },
-      "color": config.color || d3.scale.category20(),
-      "format": config.format || d3.format(",d"),
-      "selector": config.selector || null
+      'color': config.color || d3.scale.category20(),
+      'format': config.format || d3.format(',d'),
+      'selector': config.selector || null
     };
     let width = opts.width - opts.margin.left - opts.margin.right;
     let height = opts.height - opts.margin.top - opts.margin.bottom;
@@ -1553,10 +1555,10 @@
     }).sort(function (a, b) {
       return a.value - b.value;
     }).ratio(height / width * 0.5 * (1 + Math.sqrt(5))).round(false);
-    let svg = d3sparql.select(opts.selector, "treemapzoom").append("svg").attr("width", opts.width).attr("height", opts.height).style("margin-left", -opts.margin.left + "px").style("margin.right", -opts.margin.right + "px").append("g").attr("transform", "translate(" + opts.margin.left + "," + opts.margin.top + ")").style("shape-rendering", "crispEdges");
-    let grandparent = svg.append("g").attr("class", "grandparent");
-    grandparent.append("rect").attr("y", -opts.margin.top).attr("width", width).attr("height", opts.margin.top).attr("fill", "#666666");
-    grandparent.append("text").attr("x", 6).attr("y", 6 - opts.margin.top).attr("dy", ".75em").attr("stroke", "#ffffff").attr("fill", "#ffffff");
+    let svg = d3sparql.select(opts.selector, 'treemapzoom').append('svg').attr('width', opts.width).attr('height', opts.height).style('margin-left', -opts.margin.left + 'px').style('margin.right', -opts.margin.right + 'px').append('g').attr('transform', 'translate(' + opts.margin.left + ',' + opts.margin.top + ')').style('shape-rendering', 'crispEdges');
+    let grandparent = svg.append('g').attr('class', 'grandparent');
+    grandparent.append('rect').attr('y', -opts.margin.top).attr('width', width).attr('height', opts.margin.top).attr('fill', '#666666');
+    grandparent.append('text').attr('x', 6).attr('y', 6 - opts.margin.top).attr('dy', '.75em').attr('stroke', '#ffffff').attr('fill', '#ffffff');
     initialize(tree);
     layout(tree);
     display(tree);
@@ -1592,19 +1594,19 @@
     }
 
     function display(d) {
-      grandparent.datum(d.parent).on("click", transition).select("text").text(name(d));
-      let g1 = svg.insert("g", ".grandparent").datum(d).attr("class", "depth");
-      let g = g1.selectAll("g").data(d.children).enter().append("g");
+      grandparent.datum(d.parent).on('click', transition).select('text').text(name(d));
+      let g1 = svg.insert('g', '.grandparent').datum(d).attr('class', 'depth');
+      let g = g1.selectAll('g').data(d.children).enter().append('g');
       g.filter(function (d) {
         return d.children;
-      }).classed("children", true).on("click", transition);
-      g.selectAll(".child").data(function (d) {
+      }).classed('children', true).on('click', transition);
+      g.selectAll('.child').data(function (d) {
         return d.children || [d];
-      }).enter().append("rect").attr("class", "child").call(rect);
-      g.append("rect").attr("class", "parent").call(rect).append("title").text(function (d) {
+      }).enter().append('rect').attr('class', 'child').call(rect);
+      g.append('rect').attr('class', 'parent').call(rect).append('title').text(function (d) {
         return format(d.value);
       });
-      g.append("text").attr("dy", ".75em").text(function (d) {
+      g.append('text').attr('dy', '.75em').text(function (d) {
         return d.name;
       }).call(text);
 
@@ -1618,21 +1620,21 @@
         x.domain([d.x, d.x + d.dx]);
         y.domain([d.y, d.y + d.dy]); // Enable anti-aliasing during the transition.
 
-        svg.style("shape-rendering", null); // Draw child nodes on top of parent nodes.
+        svg.style('shape-rendering', null); // Draw child nodes on top of parent nodes.
 
-        svg.selectAll(".depth").sort(function (a, b) {
+        svg.selectAll('.depth').sort(function (a, b) {
           return a.depth - b.depth;
         }); // Fade-in entering text.
 
-        g2.selectAll("text").style("fill-opacity", 0); // Transition to the new view.
+        g2.selectAll('text').style('fill-opacity', 0); // Transition to the new view.
 
-        t1.selectAll("text").call(text).style("fill-opacity", 0);
-        t2.selectAll("text").call(text).style("fill-opacity", 1);
-        t1.selectAll("rect").call(rect);
-        t2.selectAll("rect").call(rect); // Remove the old node when the transition is finished.
+        t1.selectAll('text').call(text).style('fill-opacity', 0);
+        t2.selectAll('text').call(text).style('fill-opacity', 1);
+        t1.selectAll('rect').call(rect);
+        t2.selectAll('rect').call(rect); // Remove the old node when the transition is finished.
 
-        t1.remove().each("end", function () {
-          svg.style("shape-rendering", "crispEdges");
+        t1.remove().each('end', function () {
+          svg.style('shape-rendering', 'crispEdges');
           transitioning = false;
         });
       }
@@ -1641,34 +1643,34 @@
     }
 
     function text(text) {
-      text.attr("x", function (d) {
+      text.attr('x', function (d) {
         return x(d.x) + 6;
-      }).attr("y", function (d) {
+      }).attr('y', function (d) {
         return y(d.y) + 6;
       });
     }
 
     function rect(rect) {
-      rect.attr("x", function (d) {
+      rect.attr('x', function (d) {
         return x(d.x);
-      }).attr("y", function (d) {
+      }).attr('y', function (d) {
         return y(d.y);
-      }).attr("width", function (d) {
+      }).attr('width', function (d) {
         return x(d.x + d.dx) - x(d.x);
-      }).attr("height", function (d) {
+      }).attr('height', function (d) {
         return y(d.y + d.dy) - y(d.y);
-      }).attr("fill", function (d) {
+      }).attr('fill', function (d) {
         return color(d.name);
       });
       rect.attr({
-        "stroke": "#ffffff",
-        "stroke-width": "1px",
-        "opacity": 0.8
+        'stroke': '#ffffff',
+        'stroke-width': '1px',
+        'opacity': 0.8
       });
     }
 
     function name(d) {
-      return d.parent ? name(d.parent) + " / " + d.name : d.name;
+      return d.parent ? name(d.parent) + ' / ' + d.name : d.name;
     }
   };
   /*
@@ -1707,28 +1709,28 @@
     let head = json.head.lets;
     let data = json.results.bindings;
     let opts = {
-      "let_lat": config.let_lat || head[0] || "lat",
-      "let_lng": config.let_lng || head[1] || "lng",
-      "width": config.width || 960,
-      "height": config.height || 480,
-      "radius": config.radius || 5,
-      "color": config.color || "#FF3333",
-      "topojson": config.topojson || "world-50m.json",
-      "selector": config.selector || null
+      'let_lat': config.let_lat || head[0] || 'lat',
+      'let_lng': config.let_lng || head[1] || 'lng',
+      'width': config.width || 960,
+      'height': config.height || 480,
+      'radius': config.radius || 5,
+      'color': config.color || '#FF3333',
+      'topojson': config.topojson || 'world-50m.json',
+      'selector': config.selector || null
     };
     let projection = d3.geo.equirectangular().scale(153).translate([opts.width / 2, opts.height / 2]).precision(.1);
     let path = d3.geo.path().projection(projection);
     let graticule = d3.geo.graticule();
-    let svg = d3sparql.select(opts.selector, "coordmap").append("svg").attr("width", opts.width).attr("height", opts.height);
-    svg.append("path").datum(graticule.outline).attr("fill", "#a4bac7").attr("d", path);
-    svg.append("path").datum(graticule).attr("fill", "none").attr("stroke", "#333333").attr("stroke-width", ".5px").attr("stroke-opacity", ".5").attr("d", path);
+    let svg = d3sparql.select(opts.selector, 'coordmap').append('svg').attr('width', opts.width).attr('height', opts.height);
+    svg.append('path').datum(graticule.outline).attr('fill', '#a4bac7').attr('d', path);
+    svg.append('path').datum(graticule).attr('fill', 'none').attr('stroke', '#333333').attr('stroke-width', '.5px').attr('stroke-opacity', '.5').attr('d', path);
     d3.json(opts.topojson, function (error, world) {
-      svg.insert("path", ".graticule").datum(topojson.feature(world, world.objects.land)).attr("fill", "#d7c7ad").attr("stroke", "#766951").attr("d", path);
-      svg.insert("path", ".graticule").datum(topojson.mesh(world, world.objects.countries, function (a, b) {
+      svg.insert('path', '.graticule').datum(topojson.feature(world, world.objects.land)).attr('fill', '#d7c7ad').attr('stroke', '#766951').attr('d', path);
+      svg.insert('path', '.graticule').datum(topojson.mesh(world, world.objects.countries, function (a, b) {
         return a !== b;
-      })).attr("class", "boundary").attr("fill", "none").attr("stroke", "#a5967e").attr("stroke-width", ".5px").attr("d", path);
-      svg.selectAll(".pin").data(data).enter().append("circle", ".pin").attr("fill", opts.color).attr("r", opts.radius).attr("stroke", "#455346").attr("transform", function (d) {
-        return "translate(" + projection([d[opts.let_lng].value, d[opts.let_lat].value]) + ")";
+      })).attr('class', 'boundary').attr('fill', 'none').attr('stroke', '#a5967e').attr('stroke-width', '.5px').attr('d', path);
+      svg.selectAll('.pin').data(data).enter().append('circle', '.pin').attr('fill', opts.color).attr('r', opts.radius).attr('stroke', '#455346').attr('transform', function (d) {
+        return 'translate(' + projection([d[opts.let_lng].value, d[opts.let_lat].value]) + ')';
       });
     });
   };
@@ -1774,20 +1776,20 @@
     let head = json.head.lets;
     let data = json.results.bindings;
     let opts = {
-      "label": config.label || head[0] || "label",
-      "value": config.value || head[1] || "value",
-      "width": config.width || 1000,
-      "height": config.height || 1000,
-      "color_max": config.color_max || "red",
-      "color_min": config.color_min || "white",
-      "color_scale": config.color_scale || "log",
-      "topojson": config.topojson || "japan.topojson",
-      "mapname": config.mapname || "japan",
-      "keyname": config.keyname || "name_local",
-      "center_lat": config.center_lat || 34,
-      "center_lng": config.center_lng || 137,
-      "scale": config.scale || 10000,
-      "selector": config.selector || null
+      'label': config.label || head[0] || 'label',
+      'value': config.value || head[1] || 'value',
+      'width': config.width || 1000,
+      'height': config.height || 1000,
+      'color_max': config.color_max || 'red',
+      'color_min': config.color_min || 'white',
+      'color_scale': config.color_scale || 'log',
+      'topojson': config.topojson || 'japan.topojson',
+      'mapname': config.mapname || 'japan',
+      'keyname': config.keyname || 'name_local',
+      'center_lat': config.center_lat || 34,
+      'center_lng': config.center_lng || 137,
+      'scale': config.scale || 10000,
+      'selector': config.selector || null
     };
     let size = d3.nest().key(function (d) {
       return d[opts.label].value;
@@ -1802,7 +1804,7 @@
       console.log(JSON.stringify(size));
     }
 
-    let svg = d3sparql.select(opts.selector, "namedmap").append("svg").attr("width", opts.width).attr("height", opts.height);
+    let svg = d3sparql.select(opts.selector, 'namedmap').append('svg').attr('width', opts.width).attr('height', opts.height);
     d3.json(opts.topojson, function (topojson_map) {
       let geo = topojson.object(topojson_map, topojson_map.objects[opts.mapname]).geometries;
       let projection = d3.geo.mercator().center([opts.center_lng, opts.center_lat]).translate([opts.width / 2, opts.height / 2]).scale(opts.scale);
@@ -1810,7 +1812,7 @@
       let scale;
 
       switch (opts.color_scale) {
-        case "log":
+        case 'log':
           scale = d3.scale.log();
           break;
 
@@ -1820,15 +1822,15 @@
       }
 
       let color = scale.domain(extent).range([opts.color_min, opts.color_max]);
-      svg.selectAll("path").data(geo).enter().append("path").attr("d", path).attr("stroke", "black").attr("stroke-width", 0.5).style("fill", function (d, i) {
+      svg.selectAll('path').data(geo).enter().append('path').attr('d', path).attr('stroke', 'black').attr('stroke-width', 0.5).style('fill', function (d, i) {
         // map SPARQL results to colors
         return color(size[d.properties[opts.keyname]]);
       });
-      svg.selectAll(".place-label").data(geo).enter().append("text").attr("font-size", "8px").attr("class", "place-label").attr("transform", function (d) {
+      svg.selectAll('.place-label').data(geo).enter().append('text').attr('font-size', '8px').attr('class', 'place-label').attr('transform', function (d) {
         let lat = d.properties.latitude;
         let lng = d.properties.longitude;
-        return "translate(" + projection([lng, lat]) + ")";
-      }).attr("dx", "-1.5em").text(function (d) {
+        return 'translate(' + projection([lng, lat]) + ')';
+      }).attr('dx', '-1.5em').text(function (d) {
         return d.properties[opts.keyname];
       });
     });
@@ -1842,31 +1844,31 @@
 
   d3sparql.select = function (selector, type) {
     if (selector) {
-      return d3.select(selector).html("").append("div").attr("class", "d3sparql " + type);
+      return d3.select(selector).html('').append('div').attr('class', 'd3sparql ' + type);
     } else {
-      return d3.select("body").append("div").attr("class", "d3sparql " + type);
+      return d3.select('body').append('div').attr('class', 'd3sparql ' + type);
     }
   };
   /* Helper function only for the d3sparql web site */
 
 
   d3sparql.toggle = function () {
-    let button = d3.select("#button");
-    let elem = d3.select("#sparql");
+    let button = d3.select('#button');
+    let elem = d3.select('#sparql');
 
-    if (elem.style("display") === "none") {
-      elem.style("display", "inline");
-      button.attr("class", "icon-chevron-up");
+    if (elem.style('display') === 'none') {
+      elem.style('display', 'inline');
+      button.attr('class', 'icon-chevron-up');
     } else {
-      elem.style("display", "none");
-      button.attr("class", "icon-chevron-down");
+      elem.style('display', 'none');
+      button.attr('class', 'icon-chevron-down');
     }
   };
   /* for IFRAME embed */
 
 
   d3sparql.frameheight = function (height) {
-    d3.select(self.frameElement).style("height", height + "px");
+    d3.select(self.frameElement).style('height', height + 'px');
   };
 
   return d3sparql;

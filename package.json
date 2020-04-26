@@ -5,7 +5,7 @@
   "main": "d3sparql.js",
   "types": "d3sparql.d.ts",
   "scripts": {
-    "build": "npm run build:amd",
+    "build": "npm run build:amd && npm run build:umd",
     "build:amd": "rollup --config rollup.config.amd.js -o dist/d3sparql.amd.js",
     "build:umd": "rollup --config rollup.config.umd.js -o dist/d3sparql.umd.js",
     "serve": "http-server .",
