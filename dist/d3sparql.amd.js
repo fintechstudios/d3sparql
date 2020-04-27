@@ -1,4 +1,4 @@
-/* d3sparql 2020-04-26T03:05:04.570Z */
+/* d3sparql 2020-04-27T22:17:53.582Z */
 define(['d3'], function (d3) { 'use strict';
 
   d3 = d3 && Object.prototype.hasOwnProperty.call(d3, 'default') ? d3['default'] : d3;
@@ -9,6 +9,9 @@ define(['d3'], function (d3) { 'use strict';
     debug: false // set to true for showing debug information
 
   };
+  /**
+   * @param {function():*|*} messageGetter
+   */
 
   function debug(messageGetter) {
     if (d3sparql.debug) {
@@ -125,56 +128,55 @@ define(['d3'], function (d3) { 'use strict';
   d3sparql.graph = function (json, config = {}) {
     let head = json.head.lets || [];
     let data = json.results.bindings;
-    let opts = {
-      'key1': config.key1 || head[0] || 'key1',
-      'key2': config.key2 || head[1] || 'key2',
-      'label1': config.label1 || head[2] || false,
-      'label2': config.label2 || head[3] || false,
-      'value1': config.value1 || head[4] || false,
-      'value2': config.value2 || head[5] || false
-    };
+    const key1 = config.key1 || head[0] || 'key1';
+    const key2 = config.key2 || head[1] || 'key2';
+    const label1 = config.label1 || head[2] || false;
+    const label2 = config.label2 || head[3] || false;
+    const value1 = config.value1 || head[4] || false;
+    const value2 = config.value2 || head[5] || false;
     let graph = {
       'nodes': [],
       'links': []
     };
-    let check = d3.map();
+    let check = new Map();
     let index = 0;
 
     for (let i = 0; i < data.length; i++) {
-      let key1 = data[i][opts.key1].value;
-      let key2 = data[i][opts.key2].value;
-      let label1 = opts.label1 ? data[i][opts.label1].value : key1;
-      let label2 = opts.label2 ? data[i][opts.label2].value : key2;
-      let value1 = opts.value1 ? data[i][opts.value1].value : false;
-      let value2 = opts.value2 ? data[i][opts.value2].value : false;
+      let datum = data[i];
+      let key1Val = datum[key1].value;
+      let key2Val = datum[key2].value;
+      let label1Val = label1 ? datum[label1].value : key1Val;
+      let label2Val = label2 ? datum[label2].value : key2Val;
+      let value1Val = value1 ? datum[value1].value : false;
+      let value2Val = value2 ? datum[value2].value : false;
 
-      if (!check.has(key1)) {
+      if (!check.has(key1Val)) {
         graph.nodes.push({
-          'key': key1,
-          'label': label1,
-          'value': value1
+          'key': key1Val,
+          'label': label1Val,
+          'value': value1Val
         });
-        check.set(key1, index);
+        check.set(key1Val, index);
         index++;
       }
 
-      if (!check.has(key2)) {
+      if (!check.has(key2Val)) {
         graph.nodes.push({
-          'key': key2,
-          'label': label2,
-          'value': value2
+          'key': key2Val,
+          'label': label2Val,
+          'value': value2Val
         });
-        check.set(key2, index);
+        check.set(key2Val, index);
         index++;
       }
 
       graph.links.push({
-        'source': check.get(key1),
-        'target': check.get(key2)
+        'source': check.get(key1Val),
+        'target': check.get(key2Val)
       });
     }
 
-    debug(() => JSON.stringify(graph));
+    debug(graph);
     return graph;
   };
   /*
@@ -763,28 +765,24 @@ define(['d3'], function (d3) { 'use strict';
 
   d3sparql.forcegraph = function (json, config = {}) {
     let graph = json.head && json.results ? d3sparql.graph(json, config) : json;
-    let scale = d3.scale.linear().domain(d3.extent(graph.nodes, function (d) {
-      return parseFloat(d.value);
-    })).range([1, 20]);
-    let opts = {
-      'radius': config.radius || function (d) {
-        return d.value ? scale(d.value) : 1 + d.label.length;
-      },
-      'charge': config.charge || -500,
-      'distance': config.distance || 50,
-      'width': config.width || 1000,
-      'height': config.height || 750,
-      'label': config.label || false,
-      'selector': config.selector || null
-    };
-    let svg = d3sparql.select(opts.selector, 'forcegraph').append('svg').attr('width', opts.width).attr('height', opts.height);
+    let scale = d3.scale.linear().domain(d3.extent(graph.nodes, d => parseFloat(d.value))).range([1, 20]);
+
+    const radius = config.radius || (d => d.value ? scale(d.value) : 1 + d.label.length);
+
+    const charge = config.charge || -500;
+    const distance = config.distance || 50;
+    const width = config.width || 1000;
+    const height = config.height || 750;
+    const label = config.label || false;
+    const selector = config.selector || null;
+    let svg = d3sparql.select(selector, 'forcegraph').append('svg').attr('width', width).attr('height', height);
     let link = svg.selectAll('.link').data(graph.links).enter().append('line').attr('class', 'link');
     let node = svg.selectAll('.node').data(graph.nodes).enter().append('g');
-    let circle = node.append('circle').attr('class', 'node').attr('r', opts.radius);
+    let circle = node.append('circle').attr('class', 'node').attr('r', radius);
     let text = node.append('text').text(function (d) {
-      return d[opts.label || 'label'];
+      return d[label || 'label'];
     }).attr('class', 'node');
-    let force = d3.layout.force().charge(opts.charge).linkDistance(opts.distance).size([opts.width, opts.height]).nodes(graph.nodes).links(graph.links).start();
+    let force = d3.layout.force().charge(charge).linkDistance(distance).size([width, height]).nodes(graph.nodes).links(graph.links).start();
     force.on('tick', function () {
       link.attr('x1', function (d) {
         return d.source.x;
@@ -1818,24 +1816,19 @@ define(['d3'], function (d3) { 'use strict';
         let lat = d.properties.latitude;
         let lng = d.properties.longitude;
         return 'translate(' + projection([lng, lat]) + ')';
-      }).attr('dx', '-1.5em').text(function (d) {
-        return d.properties[opts.keyname];
-      });
+      }).attr('dx', '-1.5em').text(d => d.properties[opts.keyname]);
     });
   };
   /**
-   * @param {string|EventTarget} selector
+   * @param {string|EventTarget} [selector] if not given, will use body
    * @param {string} type
    * @returns {d3.Selection<any>}
    */
 
 
   d3sparql.select = function (selector, type) {
-    if (selector) {
-      return d3.select(selector).html('').append('div').attr('class', 'd3sparql ' + type);
-    } else {
-      return d3.select('body').append('div').attr('class', 'd3sparql ' + type);
-    }
+    const elem = selector ? d3.select(selector).html('') : d3.select('body');
+    return elem.append('div').attr('class', 'd3sparql ' + type);
   };
   /* Helper function only for the d3sparql web site */
 
