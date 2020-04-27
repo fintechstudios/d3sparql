@@ -56,10 +56,7 @@ d3sparql.fetch = async (url) => {
  * @returns {Promise<object>}
  */
 d3sparql.query = function (endpoint, sparql) {
-  let url = endpoint + '?query=' + encodeURIComponent(sparql);
-  debug(endpoint);
-  debug(sparql);
-  return d3sparql.fetch(url);
+  return d3sparql.fetch(`${url}?query=${encodeURIComponent(sparql)}`);
 };
 
 
