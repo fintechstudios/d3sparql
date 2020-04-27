@@ -8,95 +8,58 @@
 //
 
 import d3 from 'd3';
+import * as topojson from 'topojson-client';
 
 const d3sparql = {
   version: 'd3sparql.js version 2020-04-25',
   debug: false  // set to true for showing debug information
 };
 
+export default d3sparql;
+
 /**
- * @param {function():*|*} messageGetter
+ * @param {*} message
  */
-function debug(messageGetter) {
+function debug(message) {
   if (d3sparql.debug) {
-    switch (typeof messageGetter) {
-      case 'function':
-        console.debug(messageGetter());
-        break;
+    switch (typeof message) {
       case 'object':
-        console.debug(JSON.stringify(messageGetter));
+        console.debug(JSON.stringify(message));
         break;
       default:
-        console.debug(messageGetter);
+        console.debug(message);
     }
   }
 }
 
-/*
-  Execute a SPARQL query and pass the result to a given callback function
-
-  Synopsis:
-    <!DOCTYPE html>
-    <meta charset="utf-8">
-    <html>
-     <head>
-      <script src="http://d3js.org/d3.v3.min.js"></script>
-      <script src="d3sparql.js"></script>
-      <script>
-       function exec() {
-         let endpoint = d3.select("#endpoint").property("value")
-         let sparql = d3.select("#sparql").property("value")
-         d3sparql.query(endpoint, sparql, render)
-       }
-       function render(json) {
-         // set options and call the d3sparql.xxxxx visualization methods in this library ...
-         let config = {
-          "margin": {"top": 10, "right": 10, "bottom": 10, "left": 10},
-          "selector": "#result",
-          ...
-         }
-         d3sparql.xxxxx(json, config)
-       }
-      </script>
-      <style>
-      <!-- customize CSS -->
-      </style>
-     </head>
-     <body onload="exec()">
-      <form style="display:none">
-       <input id="endpoint" value="http://dbpedia.org/sparql" type="text">
-       <textarea id="sparql">
-        PREFIX ...
-        SELECT ...
-        WHERE { ... }
-       </textarea>
-      </form>
-      <div id="result"></div>
-     </body>
-    </html>
+/**
+ * Execute a SPARQL query
+ * @param {string} url
 */
-d3sparql.fetch = function (url, callback) {
+d3sparql.fetch = async (url) => {
   debug(url);
-  let mime = 'application/sparql-results+json';
-  d3.xhr(url, mime, function (request) {
-    let json = request.responseText;
-    debug(json);
-    callback(JSON.parse(json));
+  const res = await fetch(url, {
+    headers: {
+      Accept: 'application/sparql-results+json',
+    }
   });
-  /*
-    // d3.json sometimes fails to retrieve "application/sparql-results+json" as it is designed for "application/json"
-    d3.json(url, function(error, json) {
-      if (d3sparql.debug) { console.log(error) }
-      if (d3sparql.debug) { console.log(json) }
-      callback(json)
-    })
-  */
+
+  if (!res.ok) {
+    throw new Error(await res.text());
+  }
+  return res.json();
 };
 
-d3sparql.query = function (endpoint, sparql, callback) {
+/**
+ * @param {string} endpoint
+ * @param {string} sparql
+ * @returns {Promise<object>}
+ */
+d3sparql.query = function (endpoint, sparql) {
   let url = endpoint + '?query=' + encodeURIComponent(sparql);
   debug(endpoint);
-  d3sparql.fetch(url, callback);
+  debug(sparql);
+  return d3sparql.fetch(url);
 };
 
 
@@ -208,8 +171,8 @@ d3sparql.tree = function (json, config = {}) {
     'value': config.value || head[3] || 'value',
   };
 
-  let pair = d3.map();
-  let size = d3.map();
+  let pair = new Map();
+  let size = new Map();
   let root = data[0][opts.root].value;
   let parent = true;
   let child = parent;
@@ -253,7 +216,7 @@ d3sparql.tree = function (json, config = {}) {
 
   let tree = traverse(root);
 
-  debug(() => JSON.stringify(tree));
+  debug(tree);
   return tree;
 };
 
@@ -2048,9 +2011,7 @@ d3sparql.treemapzoom = function (json, config) {
     * world-50m.json
       * Download from https://github.com/mbostock/topojson/blob/master/examples/world-50m.json
 */
-d3sparql.coordmap = function (json, config) {
-  config = config || {};
-
+d3sparql.coordmap = function (json, config = {}) {
   let head = json.head.lets || [];
   let data = json.results.bindings;
 
@@ -2179,18 +2140,14 @@ d3sparql.namedmap = function (json, config) {
     'selector': config.selector || null
   };
 
-  let size = d3.nest()
-    .key(function (d) {
-      return d[opts.label].value;
-    })
-    .rollup(function (d) {
-      return d3.sum(d, function (d) {
-        return parseInt(d[opts.value].value);
-      });
-    }).map(data, d3.map);
+  let size = d3
+    .nest()
+    .key((d) => d[opts.label].value)
+    .rollup((d) => d3.sum(d, (d) => parseInt(d[opts.value].value)))
+    .map(data, d3.map);
   let extent = d3.extent((d3.map(size).values()));
 
-  debug(() => JSON.stringify(size));
+  debug(size);
 
   let svg = d3sparql.select(opts.selector, 'namedmap').append('svg')
     .attr('width', opts.width)
@@ -2269,5 +2226,3 @@ d3sparql.toggle = function () {
 d3sparql.frameheight = function (height) {
   d3.select(self.frameElement).style('height', height + 'px');
 };
-
-export default d3sparql;

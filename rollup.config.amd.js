@@ -1,20 +1,9 @@
-import { readFileSync } from 'fs';
-import babel from 'rollup-plugin-babel';
-
-const pkg = JSON.parse(readFileSync('./package.json').toString());
+import base from './rollup.config.base.js';
 
 export default {
-  input: 'd3sparql.js',
-  external: ['d3'],
+  ...base,
   output: {
-    name: pkg.name,
-    sourcemap: true,
-    banner: `/* ${pkg.name} ${(new Date().toISOString())} */`,
+    ...base.output,
     format: 'amd',
   },
-  plugins: [
-    babel({
-      exclude: 'node_modules/**',
-    }),
-  ],
 };
