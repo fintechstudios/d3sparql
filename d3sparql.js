@@ -18,17 +18,21 @@ const d3sparql = {
 export default d3sparql;
 
 /**
- * @param {*} message
+ * @param {...*} messages
  */
-function debug(message) {
+function debug(...messages) {
   if (d3sparql.debug) {
-    switch (typeof message) {
-      case 'object':
-        console.debug(JSON.stringify(message));
-        break;
-      default:
-        console.debug(message);
+    const args = [];
+    for (const message of messages) {
+      switch (typeof message) {
+        case 'object':
+          args.push(JSON.stringify(message));
+          break;
+        default:
+          args.push(message);
+      }
     }
+    console.debug(...args);
   }
 }
 
@@ -69,7 +73,7 @@ d3sparql.query = function (endpoint, sparql, type = 'GET') {
     const formData = new FormData();
     formData.append('query', sparql);
     // encode Form data to x-www-form-urlencoded
-    const body = new URLSearchParams([...formData.entries()])
+    const body = new URLSearchParams([...formData.entries()]);
     return d3sparql.fetch(url.href, {
       body,
       method: 'POST',
@@ -114,18 +118,18 @@ d3sparql.graph = function (json, config = {}) {
   let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
-  const key1 = config.key1 || head[0] || 'key1';
-  const key2 = config.key2 || head[1] || 'key2';
-  const label1 = config.label1 || head[2] || false;
-  const label2 = config.label2 || head[3] || false;
-  const value1 = config.value1 || head[4] || false;
-  const value2 = config.value2 || head[5] || false;
+  let key1 = config.key1 || head[0] || 'key1';
+  let key2 = config.key2 || head[1] || 'key2';
+  let label1 = config.label1 || head[2] || false;
+  let label2 = config.label2 || head[3] || false;
+  let value1 = config.value1 || head[4] || false;
+  let value2 = config.value2 || head[5] || false;
 
   let graph = {
     'nodes': [],
     'links': []
   };
-  let check = new Map();
+  let valueToIndexMap = new Map();
   let index = 0;
   for (let i = 0; i < data.length; i++) {
     let datum = data[i];
@@ -135,17 +139,17 @@ d3sparql.graph = function (json, config = {}) {
     let label2Val = label2 ? datum[label2].value : key2Val;
     let value1Val = value1 ? datum[value1].value : false;
     let value2Val = value2 ? datum[value2].value : false;
-    if (!check.has(key1Val)) {
+    if (!valueToIndexMap.has(key1Val)) {
       graph.nodes.push({ 'key': key1Val, 'label': label1Val, 'value': value1Val });
-      check.set(key1Val, index);
+      valueToIndexMap.set(key1Val, index);
       index++;
     }
-    if (!check.has(key2Val)) {
+    if (!valueToIndexMap.has(key2Val)) {
       graph.nodes.push({ 'key': key2Val, 'label': label2Val, 'value': value2Val });
-      check.set(key2Val, index);
+      valueToIndexMap.set(key2Val, index);
       index++;
     }
-    graph.links.push({ 'source': check.get(key1Val), 'target': check.get(key2Val) });
+    graph.links.push({ 'source': valueToIndexMap.get(key1Val), 'target': valueToIndexMap.get(key2Val) });
   }
   debug(graph);
   return graph;
@@ -185,10 +189,10 @@ d3sparql.tree = function (json, config = {}) {
   let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
-  const rootKey = config.root || head[0];
-  const parentKey = config.parent || head[1];
-  const childKey = config.child || head[2];
-  const valueKey = config.value || head[3] || 'value';
+  let rootKey = config.root || head[0];
+  let parentKey = config.parent || head[1];
+  let childKey = config.child || head[2];
+  let valueKey = config.value || head[3] || 'value';
 
   let pair = new Map();
   let size = new Map();
@@ -268,15 +272,19 @@ d3sparql.htmltable = function (json, config = {}) {
   let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
-  const columns = config.columns || head;
-  const headers = config.headers || columns;
-  const selector = config.selector || null;
-  const limit = config.limit !== undefined ? config.limit : data.length;
-  const offset = config.offset !== undefined ? config.offset : 0;
+  let columns = config.columns || head;
+  let headers = config.headers || columns;
+  let selector = config.selector || null;
+  let limit = config.limit !== undefined ? config.limit : data.length;
+  let offset = config.offset !== undefined ? config.offset : 0;
 
   data = data.slice(offset, offset + limit);
 
-  let table = d3sparql.select(selector, 'htmltable').append('table').attr('class', 'table table-bordered');
+  let table = d3sparql
+    .select(selector, 'htmltable')
+    .append('table')
+    .attr('class', 'table table-bordered');
+
   debug('Table');
   debug(table);
   let thead = table.append('thead');
@@ -345,28 +353,22 @@ d3sparql.htmlhash = function (json, config) {
   let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings[0];
 
-  let opts = {
-    'selector': config.selector || null
-  };
+  let selector = config.selector || null;
 
-  let table = d3sparql.select(opts.selector, 'htmlhash').append('table').attr('class', 'table table-bordered');
+  let table = d3sparql
+    .select(selector, 'htmlhash')
+    .append('table')
+    .attr('class', 'table table-bordered');
+
   let tbody = table.append('tbody');
   let row = tbody.selectAll('tr')
-    .data(function () {
-      return head.map(function (col) {
-        return { 'head': col, 'data': data[col] ? data[col].value : '' };
-      });
-    })
+    .data(() => head.map((col) => ({ head: col, data: data[col] ? data[col].value : '' })))
     .enter()
     .append('tr');
   row.append('th')
-    .text(function (d) {
-      return d.head;
-    });
+    .text((d) => d.head);
   row.append('td')
-    .text(function (d) {
-      return d.data;
-    });
+    .text((d) => d.data);
 
   // default CSS
   table.style({
@@ -427,9 +429,7 @@ d3sparql.htmlhash = function (json, config) {
     }
     </style>
 */
-d3sparql.barchart = function (json, config) {
-  config = config || {};
-
+d3sparql.barchart = function (json, config = {}) {
   let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
@@ -1227,9 +1227,7 @@ d3sparql.roundtree = function (json, config) {
     }
     </style>
 */
-d3sparql.dendrogram = function (json, config) {
-  config = config || {};
-
+d3sparql.dendrogram = function (json, config = {}) {
   let tree = (json.head && json.results) ? d3sparql.tree(json, config) : json;
 
   let opts = {
@@ -1435,21 +1433,22 @@ d3sparql.sunburst = function (json, config = {}) {
     let xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
       yd = d3.interpolate(y.domain(), [d.y, maxDepth(d)]),
       yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-    return function (d) {
-      return function (t) {
+
+    return (data) => {
+      return (t) => {
         x.domain(xd(t));
         y.domain(yd(t)).range(yr(t));
-        return arc(d);
-      };
-    };
+        return arc(data);
+      }
+    }
   }
 
   function isParentOf(p, c) {
-    if (p === c) return true;
+    if (p === c) {
+      return true;
+    }
     if (p.children) {
-      return p.children.some(function (d) {
-        return isParentOf(d, c);
-      });
+      return p.children.some((d) => isParentOf(d, c));
     }
     return false;
   }
@@ -1509,9 +1508,7 @@ d3sparql.sunburst = function (json, config = {}) {
   TODO:
     Fix rotation angle for each text to avoid string collision
 */
-d3sparql.circlepack = function (json, config) {
-  config = config || {};
-
+d3sparql.circlepack = function (json, config = {}) {
   let tree = (json.head && json.results) ? d3sparql.tree(json, config) : json;
 
   let opts = {
@@ -1672,64 +1669,30 @@ d3sparql.circlepack = function (json, config) {
 d3sparql.treemap = function (json, config = {}) {
   let tree = (json.head && json.results) ? d3sparql.tree(json, config) : json;
 
-  let opts = {
-    'width': config.width || 800,
-    'height': config.height || 500,
-    'count': config.count || false,
-    'color': config.color || d3.scale.category20c(),
-    'margin': config.margin || { top: 0, right: 0, bottom: 0, left: 0 },
-    'selector': config.selector || null
-  };
+  let width = config.width || 800;
+  let height = config.height || 500;
+  let count = config.count || false;
+  let color = config.color || d3.scale.category20c();
+  let margin = config.margin || { top: 0, right: 0, bottom: 0, left: 0 };
+  let selector = config.selector || null;
 
-  let width = opts.width - opts.margin.left - opts.margin.right;
-  let height = opts.height - opts.margin.top - opts.margin.bottom;
-  let color = opts.color;
+  width = width - margin.left - margin.right;
+  height = height - margin.top - margin.bottom;
 
-  function count(d) {
-    return 1;
-  }
-
-  function size(d) {
-    return d.value;
-  }
+  let getCount = (d) => 1;
+  let getSize = (d) => d.value;
 
   let treemap = d3.layout.treemap()
     .size([width, height])
     .sticky(true)
-    .value(opts.count ? count : size);
+    .value(count ? getCount : getSize);
 
-  let div = d3sparql.select(opts.selector, 'treemap')
+  let div = d3sparql.select(selector, 'treemap')
     .style('position', 'relative')
-    .style('width', opts.width + 'px')
-    .style('height', opts.height + 'px')
-    .style('left', opts.margin.left + 'px')
-    .style('top', opts.margin.top + 'px');
-
-  let node = div.datum(tree).selectAll('.node')
-    .data(treemap.nodes)
-    .enter()
-    .append('div')
-    .attr('class', 'node')
-    .call(position)
-    .style('background', function (d) {
-      return d.children ? color(d.name) : null;
-    })
-    .text(function (d) {
-      return d.children ? null : d.name;
-    });
-
-  // default CSS/SVG
-  node.style({
-    'border-style': 'solid',
-    'border-width': '1px',
-    'border-color': 'white',
-    'font-size': '10px',
-    'font-family': 'sans-serif',
-    'line-height': '12px',
-    'overflow': 'hidden',
-    'position': 'absolute',
-    'text-indent': '2px',
-  });
+    .style('width', width + 'px')
+    .style('height', height + 'px')
+    .style('left', margin.left + 'px')
+    .style('top', margin.top + 'px');
 
   function position() {
     this.style('left', function (d) {
@@ -1745,6 +1708,28 @@ d3sparql.treemap = function (json, config = {}) {
         return Math.max(0, d.dy - 1) + 'px';
       });
   }
+
+  let node = div.datum(tree).selectAll('.node')
+    .data(treemap.nodes)
+    .enter()
+    .append('div')
+    .attr('class', 'node')
+    .call(position)
+    .style('background', (d) => d.children ? color(d.name) : null)
+    .text((d) => d.children ? null : d.name);
+
+  // default CSS/SVG
+  node.style({
+    'border-style': 'solid',
+    'border-width': '1px',
+    'border-color': 'white',
+    'font-size': '10px',
+    'font-family': 'sans-serif',
+    'line-height': '12px',
+    'overflow': 'hidden',
+    'position': 'absolute',
+    'text-indent': '2px',
+  });
 };
 
 /*
@@ -1784,9 +1769,7 @@ d3sparql.treemap = function (json, config = {}) {
     }
     </style>
 */
-d3sparql.treemapzoom = function (json, config) {
-  config = config || {};
-
+d3sparql.treemapzoom = function (json, config = {}) {
   let tree = (json.head && json.results) ? d3sparql.tree(json, config) : json;
 
   let opts = {
@@ -1842,11 +1825,7 @@ d3sparql.treemapzoom = function (json, config) {
     .attr('stroke', '#ffffff')
     .attr('fill', '#ffffff');
 
-  initialize(tree);
-  layout(tree);
-  display(tree);
-
-  function initialize(tree) {
+  let initialize = (tree) => {
     tree.x = tree.y = 0;
     tree.dx = width;
     tree.dy = height;
@@ -1860,19 +1839,24 @@ d3sparql.treemapzoom = function (json, config) {
   // the parent’s dimensions are not discarded as we recurse. Since each group
   // of sibling was laid out in 1×1, we must rescale to fit using absolute
   // coordinates. This lets us use a viewport to zoom.
-  function layout(d) {
-    if (d.children) {
-      treemap.nodes({ children: d.children });
-      d.children.forEach(function (c) {
-        c.x = d.x + c.x * d.dx;
-        c.y = d.y + c.y * d.dy;
-        c.dx *= d.dx;
-        c.dy *= d.dy;
-        c.parent = d;
-        layout(c);
-      });
+  let layout = (d) => {
+    if (!d.children) {
+     return;
     }
+    treemap.nodes({ children: d.children });
+    d.children.forEach((c) => {
+      c.x = d.x + c.x * d.dx;
+      c.y = d.y + c.y * d.dy;
+      c.dx *= d.dx;
+      c.dy *= d.dy;
+      c.parent = d;
+      layout(c);
+    });
   }
+
+  initialize(tree);
+  layout(tree);
+  display(tree);
 
   function display(d) {
     grandparent
@@ -2132,9 +2116,7 @@ d3sparql.coordmap = function (json, config = {}) {
     * japan.topojson
       * Download from https://github.com/sparql-book/sparql-book/blob/master/chapter5/D3/japan.topojson
 */
-d3sparql.namedmap = function (json, config) {
-  config = config || {};
-
+d3sparql.namedmap = function (json, config = {}) {
   let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
