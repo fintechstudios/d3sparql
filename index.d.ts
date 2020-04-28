@@ -19,6 +19,7 @@ declare namespace d3sparql {
     head: {
       links?: object[];
       vars?: string[];
+      lets?: string[];
     };
     results: {
       bindings: object[];

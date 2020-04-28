@@ -111,7 +111,7 @@ d3sparql.query = function (endpoint, sparql, type = 'GET') {
     Should follow the convention in the miserables.json https://gist.github.com/mbostock/4062045 to contain group for nodes and value for edges.
 */
 d3sparql.graph = function (json, config = {}) {
-  let head = json.head.lets || [];
+  let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
   const key1 = config.key1 || head[0] || 'key1';
@@ -182,7 +182,7 @@ d3sparql.graph = function (json, config = {}) {
     }
 */
 d3sparql.tree = function (json, config = {}) {
-  let head = json.head.lets || [];
+  let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
   const rootKey = config.root || head[0];
@@ -265,7 +265,7 @@ d3sparql.tree = function (json, config = {}) {
     </style>
 */
 d3sparql.htmltable = function (json, config = {}) {
-  let head = json.head.lets || [];
+  let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
   const columns = config.columns || head;
@@ -342,7 +342,7 @@ d3sparql.htmltable = function (json, config = {}) {
 d3sparql.htmlhash = function (json, config) {
   config = config || {};
 
-  let head = json.head.lets || [];
+  let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings[0];
 
   let opts = {
@@ -430,7 +430,7 @@ d3sparql.htmlhash = function (json, config) {
 d3sparql.barchart = function (json, config) {
   config = config || {};
 
-  let head = json.head.lets || [];
+  let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
   let opts = {
@@ -565,7 +565,7 @@ d3sparql.barchart = function (json, config) {
     </style>
 */
 d3sparql.piechart = function (json, config = {}) {
-  let head = json.head.lets || [];
+  let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
   let opts = {
@@ -678,7 +678,7 @@ d3sparql.piechart = function (json, config = {}) {
     </style>
 */
 d3sparql.scatterplot = function (json, config = {}) {
-  let head = json.head.lets || [];
+  let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
   let opts = {
@@ -2027,7 +2027,7 @@ d3sparql.treemapzoom = function (json, config) {
       * Download from https://github.com/mbostock/topojson/blob/master/examples/world-50m.json
 */
 d3sparql.coordmap = function (json, config = {}) {
-  let head = json.head.lets || [];
+  let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
   let opts = {
@@ -2135,7 +2135,7 @@ d3sparql.coordmap = function (json, config = {}) {
 d3sparql.namedmap = function (json, config) {
   config = config || {};
 
-  let head = json.head.lets || [];
+  let head = json.head.lets || json.head.vars || [];
   let data = json.results.bindings;
 
   let opts = {
