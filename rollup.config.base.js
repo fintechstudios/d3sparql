@@ -8,7 +8,7 @@ export const sourcemap = true;
 
 export default {
   input: 'd3sparql.js',
-  external: ['d3', 'topojson-client'],
+  external: ['d3', 'd3-sankey', 'topojson-client'],
   output: {
     name: pkg.name,
     sourcemap,

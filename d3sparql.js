@@ -8,6 +8,7 @@
 //
 
 import d3 from 'd3';
+import 'd3-sankey';
 import * as topojson from 'topojson-client';
 
 const d3sparql = {
