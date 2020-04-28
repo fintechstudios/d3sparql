@@ -35,11 +35,14 @@ function debug(message) {
 /**
  * Execute a SPARQL query
  * @param {string} url
-*/
-d3sparql.fetch = async (url) => {
+ * @param {RequestInit} [init]
+ */
+d3sparql.fetch = async (url, init = {}) => {
   debug(url);
   const res = await fetch(url, {
+    ...init,
     headers: {
+      ...init.headers,
       Accept: 'application/sparql-results+json',
     }
   });
@@ -53,10 +56,29 @@ d3sparql.fetch = async (url) => {
 /**
  * @param {string} endpoint
  * @param {string} sparql
+ * @param {('GET'|'POST')} [type]
  * @returns {Promise<object>}
  */
-d3sparql.query = function (endpoint, sparql) {
-  return d3sparql.fetch(`${endpoint}?query=${encodeURIComponent(sparql)}`);
+d3sparql.query = function (endpoint, sparql, type = 'GET') {
+  const url = new URL(endpoint);
+  if (type === 'GET') {
+    url.search = `query=${encodeURIComponent(sparql)}`;
+    return d3sparql.fetch(url.href);
+  } else if (type === 'POST') {
+    // encode query as Form data
+    const body = new FormData();
+    body.append('query', sparql);
+    return d3sparql.fetch(url.href, {
+      body,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      }
+    });
+  }
+
+  throw new TypeError(`unsupported query type: ${type}`);
+
 };
 
 
@@ -161,22 +183,20 @@ d3sparql.tree = function (json, config = {}) {
   let head = json.head.lets || [];
   let data = json.results.bindings;
 
-  let opts = {
-    'root': config.root || head[0],
-    'parent': config.parent || head[1],
-    'child': config.child || head[2],
-    'value': config.value || head[3] || 'value',
-  };
+  const rootKey = config.root || head[0];
+  const parentKey = config.parent || head[1];
+  const childKey = config.child || head[2];
+  const valueKey = config.value || head[3] || 'value';
 
   let pair = new Map();
   let size = new Map();
-  let root = data[0][opts.root].value;
+  let root = data[0][rootKey].value;
   let parent = true;
   let child = parent;
   for (let i = 0; i < data.length; i++) {
     const datum = data[i];
-    parent = datum[opts.parent].value;
-    child = datum[opts.child].value;
+    parent = datum[parentKey].value;
+    child = datum[childKey].value;
     if (parent !== child) {
       /** @type {Array} */
       let children;
@@ -187,8 +207,8 @@ d3sparql.tree = function (json, config = {}) {
         children = [child];
       }
       pair.set(parent, children);
-      if (datum[opts.value]) {
-        size.set(child, datum[opts.value].value);
+      if (datum[valueKey]) {
+        size.set(child, datum[valueKey].value);
       }
     }
   }
@@ -196,13 +216,9 @@ d3sparql.tree = function (json, config = {}) {
   function traverse(node) {
     let list = pair.get(node);
     if (list) {
-      let children = list.map(function (d) {
-        return traverse(d);
-      });
+      let children = list.map((d) => traverse(d));
       // sum of values of children
-      let subtotal = d3.sum(children, function (d) {
-        return d.value;
-      });
+      let subtotal = d3.sum(children, (d) => d.value);
       // add a value of parent if exists
       let total = d3.sum([subtotal, size.get(node)]);
       return { 'name': node, 'children': children, 'value': total };
@@ -253,13 +269,13 @@ d3sparql.htmltable = function (json, config = {}) {
   const columns = config.columns || head;
   const headers = config.headers || columns;
   const selector = config.selector || null;
-  const limit =  config.limit !== undefined ? config.limit : data.length;
+  const limit = config.limit !== undefined ? config.limit : data.length;
   const offset = config.offset !== undefined ? config.offset : 0;
 
   data = data.slice(offset, offset + limit);
 
   let table = d3sparql.select(selector, 'htmltable').append('table').attr('class', 'table table-bordered');
-  debug("Table");
+  debug('Table');
   debug(table);
   let thead = table.append('thead');
   let tbody = table.append('tbody');
@@ -279,7 +295,7 @@ d3sparql.htmltable = function (json, config = {}) {
     .append('td')
     .text((val) => val);
 
-  debug("Table cells");
+  debug('Table cells');
   debug(cells);
 
   // default CSS
@@ -2192,7 +2208,7 @@ d3sparql.namedmap = function (json, config) {
         return 'translate(' + projection([lng, lat]) + ')';
       })
       .attr('dx', '-1.5em')
-      .text( (d) => d.properties[opts.keyname]);
+      .text((d) => d.properties[opts.keyname]);
   });
 };
 
