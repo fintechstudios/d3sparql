@@ -66,8 +66,10 @@ d3sparql.query = function (endpoint, sparql, type = 'GET') {
     return d3sparql.fetch(url.href);
   } else if (type === 'POST') {
     // encode query as Form data
-    const body = new FormData();
-    body.append('query', sparql);
+    const formData = new FormData();
+    formData.append('query', sparql);
+    // encode Form data to x-www-form-urlencoded
+    const body = new URLSearchParams([...formData.entries()])
     return d3sparql.fetch(url.href, {
       body,
       method: 'POST',
