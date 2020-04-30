@@ -16,6 +16,8 @@ declare namespace d3sparql {
 
   // Query tools
 
+  export function createResults(bindings, opts?: { vars?: string[] }): SparqlResults;
+
   export function fetch(url: string, init?: RequestInit): Promise<SparqlResults>;
 
   export function query(endpoint: string, sparql: string, type?: 'GET' | 'POST'): Promise<SparqlResults>;

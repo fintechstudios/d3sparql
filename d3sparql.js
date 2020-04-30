@@ -33,6 +33,23 @@ function debug(...messages) {
 }
 
 /**
+ * Utlity method for
+ * @param {SparqlResultBinding[]} bindings
+ * @param {string[]} vars
+ * @return {SparqlResults}
+ */
+d3sparql.createResults = function(bindings, { vars = Object.keys(bindings[0])} = {}) {
+  return {
+    head: {
+      vars,
+    },
+    results: {
+      bindings,
+    }
+  }
+}
+
+/**
  * Execute a SPARQL query
  * @param {string} url
  * @param {RequestInit} [init]
@@ -203,55 +220,57 @@ d3sparql.tree = function (json, config = {}) {
   let valueKey = config.value || head[3] || 'value';
 
   /**
+   * Maps parents to a list of children.
+   *
    * @type {Map<string, string[]>}
    */
-  let pairMap = new Map();
+  let hierarchyMap = new Map();
   /**
+   * Maps child to values.
    * @type {Map<string, number|string>}
    */
-  let sizeMap = new Map();
-  let parent = true;
-  let child = parent;
+  let valueMap = new Map();
+
   // Build memoized access maps
   for (let i = 0; i < data.length; i++) {
     const datum = data[i];
-    parent = datum[parentKey].value;
-    child = datum[childKey].value;
+    let parent = datum[parentKey].value;
+    let child = datum[childKey].value;
     if (parent !== child) {
       /** @type {string[]} */
       let children;
-      if (pairMap.has(parent)) {
-        children = pairMap.get(parent);
+      if (hierarchyMap.has(parent)) {
+        children = hierarchyMap.get(parent);
         children.push(child);
       } else {
         children = [child];
       }
-      pairMap.set(parent, children);
+      hierarchyMap.set(parent, children);
       if (datum[valueKey]) {
-        sizeMap.set(child, datum[valueKey].value);
+        valueMap.set(child, datum[valueKey].value);
       }
     }
   }
 
   debug("Tree memoization");
-  debug("pair map", pairMap);
-  debug("size map", sizeMap);
+  debug("pair map", hierarchyMap);
+  debug("size map", valueMap);
 
   /**
    * @param {string} nodeName
    * @return {TreeNode}
    */
   let traverse = (nodeName) => {
-    let list = pairMap.get(nodeName);
+    let list = hierarchyMap.get(nodeName);
     debug("Traversing", nodeName, list);
     if (!list) {
-      return { 'name': nodeName, 'value': sizeMap.get(nodeName) || 1, children: [] };
+      return { 'name': nodeName, 'value': valueMap.get(nodeName) || 1, children: [] };
     }
     let children = list.map((d) => traverse(d));
     // sum of values of children
     let subtotal = d3.sum(children, (d) => d.value);
     // add a value of parent if exists
-    let total = d3.sum([subtotal, sizeMap.get(nodeName)]);
+    let total = d3.sum([subtotal, valueMap.get(nodeName)]);
     return { children, 'name': nodeName, 'value': total };
   };
 
