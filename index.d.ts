@@ -36,7 +36,6 @@ declare namespace d3sparql {
 
   export function circlepack(json: SparqlResults, config?: tree.CirclePackConfig);
 
-
   // Graphs
 
   export function graph(json: SparqlResults, config?: graph.GraphConfig): graph.Graph;

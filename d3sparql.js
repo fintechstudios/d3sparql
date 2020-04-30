@@ -2140,7 +2140,8 @@ d3sparql.namedmap = function (json, config = {}) {
     .nest()
     .key((d) => d[label].value)
     .rollup((d) => d3.sum(d, (d) => parseInt(d[value].value)))
-    .map(data, d3.map);
+    .map(data);
+
   let extent = d3.extent((d3.map(size).values()));
 
   debug(size);
@@ -2151,12 +2152,15 @@ d3sparql.namedmap = function (json, config = {}) {
     .attr('height', height);
 
   d3.json(topojsonFile, (topojson_map) => {
-    let geo = topojson.object(topojson_map, topojson_map.objects[mapname]).geometries;
+    let geo = topojson.feature(topojson_map, topojson_map.objects[mapname]).features;
+
     let projection = d3.geo.mercator()
       .center([center_lng, center_lat])
       .translate([width / 2, height / 2])
       .scale(scale);
+
     let path = d3.geo.path().projection(projection);
+
     let scaleFn;
     switch (color_scale) {
       case 'log':
