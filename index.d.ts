@@ -226,7 +226,7 @@ declare namespace d3sparql {
     interface TreeNode {
       value: number;
       name: string;
-      children?: TreeNode[];
+      children: TreeNode[];
     }
 
     /**

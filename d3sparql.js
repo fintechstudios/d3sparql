@@ -18,11 +18,16 @@ const d3sparql = {
 
 export default d3sparql;
 
+
+function debugEnabled() {
+  return d3sparql.debug;
+}
+
 /**
  * @param {...*} messages
  */
 function debug(...messages) {
-  if (d3sparql.debug) {
+  if (debugEnabled()) {
     const args = [];
     for (const message of messages) {
       switch (typeof message) {
@@ -196,7 +201,7 @@ d3sparql.graph = function (json, config = {}) {
  *
  * @param {SparqlResults} json
  * @param {TreeConfig} [config={}]
- * @return {{children: *, name: *, value: number}|{name: *, value: unknown}}
+ * @return {Tree}
  */
 d3sparql.tree = function (json, config = {}) {
   let head = json.head.lets || json.head.vars || [];
@@ -215,7 +220,6 @@ d3sparql.tree = function (json, config = {}) {
    * @type {Map<string, number|string>}
    */
   let sizeMap = new Map();
-  let root = data[0][rootKey].value;
   let parent = true;
   let child = parent;
   // Build memoized access maps
@@ -245,17 +249,20 @@ d3sparql.tree = function (json, config = {}) {
    */
   let traverse = (nodeName) => {
     let list = pairMap.get(nodeName);
+    debug("Traversing", nodeName, list);
     if (!list) {
-      return { 'name': nodeName, 'value': sizeMap.get(nodeName) || 1 };
+      return { 'name': nodeName, 'value': sizeMap.get(nodeName) || 1, children: [] };
     }
     let children = list.map((d) => traverse(d));
     // sum of values of children
     let subtotal = d3.sum(children, (d) => d.value);
     // add a value of parent if exists
     let total = d3.sum([subtotal, sizeMap.get(nodeName)]);
-    return { 'name': nodeName, 'children': children, 'value': total };
+    return { children, 'name': nodeName, 'value': total };
   };
 
+  let root = data[0][rootKey].value;
+  debug(root);
   let tree = traverse(root);
 
   debug(tree);
