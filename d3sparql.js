@@ -28,17 +28,7 @@ function debugEnabled() {
  */
 function debug(...messages) {
   if (debugEnabled()) {
-    const args = [];
-    for (const message of messages) {
-      switch (typeof message) {
-        case 'object':
-          args.push(JSON.stringify(message));
-          break;
-        default:
-          args.push(message);
-      }
-    }
-    console.debug(...args);
+    console.debug(...messages);
   }
 }
 
@@ -243,6 +233,10 @@ d3sparql.tree = function (json, config = {}) {
     }
   }
 
+  debug("Tree memoization");
+  debug("pair map", pairMap);
+  debug("size map", sizeMap);
+
   /**
    * @param {string} nodeName
    * @return {TreeNode}
@@ -262,7 +256,7 @@ d3sparql.tree = function (json, config = {}) {
   };
 
   let root = data[0][rootKey].value;
-  debug(root);
+  debug("Root", root);
   let tree = traverse(root);
 
   debug(tree);
